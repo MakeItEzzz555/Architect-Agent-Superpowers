@@ -1,0 +1,12 @@
+{
+  "name": "architect-agent-superpowers",
+  "description": "Architecture/AEC skills and specialist agents for Claude Code.",
+  "owner": {"name": "Nicolas Savvides"},
+  "plugins": [
+    {
+      "name": "architect-agent-superpowers",
+      "source": "./providers/claude",
+      "description": "Architecture/AEC skills and subagents for design, research, BIM/CAD, QA, quantities, and review."
+    }
+  ]
+}

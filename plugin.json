@@ -1,0 +1,6 @@
+{
+  "name": "architect-agent-superpowers",
+  "version": "0.1.0",
+  "description": "Portable architecture/AEC agent skills for design analysis, planning research, CAD/BIM workflows, drawing QA, quantities, presentations, and red-team review.",
+  "skills": "./skills/"
+}

@@ -1,0 +1,6 @@
+{
+  "name": "architect-agent-superpowers",
+  "version": "0.1.0",
+  "description": "Architecture/AEC skills for Codex and compatible OpenAI agent runtimes.",
+  "skills": "./skills/"
+}
