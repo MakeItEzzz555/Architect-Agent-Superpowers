@@ -1,5 +1,8 @@
 {
   "name": "architect-agent-superpowers",
   "version": "0.1.0",
-  "description": "Architecture/AEC skills and specialist subagents for Claude Code."
+  "description": "Architecture/AEC skills and specialist subagents for Claude Code.",
+  "author": {
+    "name": "Nicolas Savvides"
+  }
 }
