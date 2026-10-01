@@ -8,6 +8,7 @@
 - Added beginner-safe `auto` runtime detection to global installers while preserving explicit/all targets.
 - Added canonical skill registry, provider-neutral activation eval cases, eval documentation, and stronger CI contract checks.
 - Added Linux and Windows installer smoke-test jobs to CI.
+- Updated GitHub Actions to the current Node 24 generations (`checkout@v7`, `setup-python@v7`).
 - Added update instructions for clone installs, Claude plugins, and Gemini extensions.
 - Corrected Codex documentation to avoid unnecessary global AGENTS.md routing context.
 
