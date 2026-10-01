@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "description": "Provider-neutral natural-language cases for architecture skill routing. CI validates structure and coverage; model behavior requires a real agent runtime.",
+  "cases": [
+    {
+      "id": "orchestrator-multidiscipline-01",
+      "prompt": "Audit this mixed-use project using the client brief, planning constraints, drawing set, and area schedule. Coordinate the review and tell me the highest-risk gaps.",
+      "expected_skill": "architecture-orchestrator"
+    },
+    {
+      "id": "orchestrator-multifile-02",
+      "prompt": "I have an IFC model, a PDF issue set, the client brief, and local planning notes. Coordinate the specialists needed for a pre-submission architecture review.",
+      "expected_skill": "architecture-orchestrator"
+    },
+    {
+      "id": "programming-brief-01",
+      "prompt": "Turn this client brief into a room schedule with target net areas, quantities, adjacencies, and unresolved requirements.",
+      "expected_skill": "architecture-programming"
+    },
+    {
+      "id": "programming-reconcile-02",
+      "prompt": "Check this space program for missing rooms, duplicate requirements, impossible area targets, and adjacency conflicts.",
+      "expected_skill": "architecture-programming"
+    },
+    {
+      "id": "regulation-site-01",
+      "prompt": "Build a sourced planning constraints matrix for this site, including setbacks, coverage, height, access, parking, and the applicable authority sources.",
+      "expected_skill": "site-regulation-research"
+    },
+    {
+      "id": "regulation-code-02",
+      "prompt": "Research the applicable accessibility and fire-related building requirements for this project and separate confirmed rules from interpretations.",
+      "expected_skill": "site-regulation-research"
+    },
+    {
+      "id": "concept-compare-01",
+      "prompt": "Compare scheme A and scheme B for circulation, daylight, site response, structure, servicing, flexibility, and constructability.",
+      "expected_skill": "concept-design-review"
+    },
+    {
+      "id": "concept-critique-02",
+      "prompt": "Critique this concept design against the project brief and identify evidence-based design opportunities without redesigning it for me.",
+      "expected_skill": "concept-design-review"
+    },
+    {
+      "id": "bim-batch-01",
+      "prompt": "Help me batch-check and rename Revit sheets safely, with a dry run and verification before changing production files.",
+      "expected_skill": "cad-bim-automation"
+    },
+    {
+      "id": "bim-ifc-02",
+      "prompt": "Extract and validate door and room data from this IFC workflow, preserving units and reporting before/after counts.",
+      "expected_skill": "cad-bim-automation"
+    },
+    {
+      "id": "drawingqa-set-01",
+      "prompt": "Review this architectural PDF issue set for broken callouts, inconsistent levels, room tags, dimensions, revisions, and cross-sheet conflicts.",
+      "expected_skill": "drawing-qa"
+    },
+    {
+      "id": "drawingqa-coordination-02",
+      "prompt": "Check plans, elevations, sections, and schedules for coordination errors and report each finding with sheet/location and confidence.",
+      "expected_skill": "drawing-qa"
+    },
+    {
+      "id": "quantity-area-01",
+      "prompt": "Reconcile the room schedule totals and audit the net and gross area calculations without mixing measurement bases.",
+      "expected_skill": "area-quantity-audit"
+    },
+    {
+      "id": "quantity-takeoff-02",
+      "prompt": "Audit these component counts and area takeoffs for duplicates, missing IDs, unit mismatches, and subtotal errors.",
+      "expected_skill": "area-quantity-audit"
+    },
+    {
+      "id": "presentation-board-01",
+      "prompt": "Review these architecture presentation boards for hierarchy, legibility, redundant content, labels, and narrative sequence.",
+      "expected_skill": "presentation-review"
+    },
+    {
+      "id": "presentation-jury-02",
+      "prompt": "Restructure the flow of my architecture jury presentation so each slide has a clear job and the drawings support the design claims.",
+      "expected_skill": "presentation-review"
+    },
+    {
+      "id": "redteam-issue-01",
+      "prompt": "Red-team this final drawing package before issue. Challenge hidden assumptions, unsupported compliance claims, and coordination gaps.",
+      "expected_skill": "architecture-red-team"
+    },
+    {
+      "id": "redteam-submission-02",
+      "prompt": "Act as an independent final reviewer of this architecture submission and surface only high-value risks with evidence and required action.",
+      "expected_skill": "architecture-red-team"
+    },
+    {
+      "id": "negative-code-01",
+      "prompt": "Write a Python function that sorts a list of integers using merge sort.",
+      "expected_skill": null
+    },
+    {
+      "id": "negative-git-02",
+      "prompt": "Summarize the last five Git commits in this software repository.",
+      "expected_skill": null
+    }
+  ]
+}

@@ -1,7 +1,12 @@
 name: validate
+
 on:
   push:
   pull_request:
+
+permissions:
+  contents: read
+
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -12,3 +17,30 @@ jobs:
           python-version: "3.12"
       - run: python3 scripts/sync-provider-skills.py --check
       - run: python3 tests/check_repo.py
+      - run: bash -n scripts/install-global.sh
+      - name: Smoke test auto installer
+        shell: bash
+        run: |
+          set -euo pipefail
+          T="$(mktemp -d)"
+          mkdir -p "$T/home" "$T/bin"
+          for x in codex claude gemini; do printf '#!/usr/bin/env sh\nexit 0\n' > "$T/bin/$x"; chmod +x "$T/bin/$x"; done
+          HOME="$T/home" CODEX_HOME="$T/home/.codex" PATH="$T/bin:$PATH" bash scripts/install-global.sh auto
+          test "$(find "$T/home/.codex/skills" -name SKILL.md | wc -l)" -eq 9
+          test "$(find "$T/home/.claude/skills" -name SKILL.md | wc -l)" -eq 9
+          test "$(find "$T/home/.gemini/skills" -name SKILL.md | wc -l)" -eq 9
+
+  windows-installer:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Smoke test PowerShell installer
+        shell: pwsh
+        run: |
+          $env:CODEX_HOME = Join-Path $env:RUNNER_TEMP "aas-codex"
+          .\scripts\install-global.ps1 all
+          if ((Get-ChildItem "$env:CODEX_HOME\skills" -Filter SKILL.md -Recurse).Count -ne 9) { throw "Codex skill count mismatch" }
+          if ((Get-ChildItem "$HOME\.claude\skills" -Filter SKILL.md -Recurse).Count -ne 9) { throw "Claude skill count mismatch" }
+          if ((Get-ChildItem "$HOME\.claude\agents" -Filter *.md).Count -ne 6) { throw "Claude agent count mismatch" }
+          if ((Get-ChildItem "$HOME\.gemini\skills" -Filter SKILL.md -Recurse).Count -ne 9) { throw "Gemini skill count mismatch" }
+          if ((Get-ChildItem "$HOME\.gemini\agents" -Filter *.md).Count -ne 6) { throw "Gemini agent count mismatch" }

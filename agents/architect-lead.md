@@ -1,5 +1,7 @@
 ---
 kind: local
+max_turns: 20
+timeout_mins: 10
 name: architect-lead
 description: Lead architecture coordinator for multi-discipline AEC tasks; delegates bounded specialist reviews and synthesizes them.
 ---

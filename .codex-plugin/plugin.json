@@ -1,6 +1,21 @@
 {
   "name": "architect-agent-superpowers",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Architecture/AEC skills for Codex and compatible OpenAI agent runtimes.",
+  "author": {
+    "name": "Nicolas Savvides",
+    "url": "https://github.com/MakeItEzzz555"
+  },
+  "homepage": "https://github.com/MakeItEzzz555/Architect-Agent-Superpowers",
+  "repository": "https://github.com/MakeItEzzz555/Architect-Agent-Superpowers",
+  "license": "MIT",
+  "keywords": [
+    "architecture",
+    "aec",
+    "bim",
+    "cad",
+    "codex",
+    "agent-skills"
+  ],
   "skills": "./skills/"
 }

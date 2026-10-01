@@ -1,5 +1,7 @@
 ---
 kind: local
+max_turns: 14
+timeout_mins: 10
 name: quantity-auditor
 description: Architecture area, schedule, count, and quantity reconciliation specialist with explicit units and measurement bases.
 ---

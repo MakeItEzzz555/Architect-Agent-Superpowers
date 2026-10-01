@@ -1,0 +1,20 @@
+{
+  "name": "architect-agent-superpowers",
+  "interface": {
+    "displayName": "Architect Agent Superpowers"
+  },
+  "plugins": [
+    {
+      "name": "architect-agent-superpowers",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}

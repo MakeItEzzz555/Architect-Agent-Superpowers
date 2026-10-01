@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-TARGET="${1:-all}"
+TARGET="${1:-auto}"
 STAMP="$(date +%Y%m%d-%H%M%S)"
 SKILLS=(architecture-orchestrator architecture-programming site-regulation-research concept-design-review cad-bim-automation drawing-qa area-quantity-audit presentation-review architecture-red-team)
 AGENTS=(architect-lead site-code-researcher design-critic bim-automation-specialist drawing-reviewer quantity-auditor)
@@ -45,12 +45,24 @@ install_gemini() {
   echo "Gemini CLI: installed skills + agents under $home"
 }
 
+install_auto() {
+  local found=0
+  if command -v codex >/dev/null 2>&1; then install_codex; found=1; else echo "Codex: not installed, skipped"; fi
+  if command -v claude >/dev/null 2>&1; then install_claude; found=1; else echo "Claude Code: not installed, skipped"; fi
+  if command -v gemini >/dev/null 2>&1; then install_gemini; found=1; else echo "Gemini CLI: not installed, skipped"; fi
+  if [ "$found" -eq 0 ]; then
+    echo "No supported CLI runtime was detected. Install Codex, Claude Code, or Gemini CLI first, or choose an explicit target." >&2
+    exit 3
+  fi
+}
+
 case "$TARGET" in
+  auto) install_auto ;;
   codex) install_codex ;;
   claude) install_claude ;;
   gemini) install_gemini ;;
   all) install_codex; install_claude; install_gemini ;;
-  *) echo "Usage: $0 [all|codex|claude|gemini]" >&2; exit 2 ;;
+  *) echo "Usage: $0 [auto|all|codex|claude|gemini]" >&2; exit 2 ;;
 esac
 
 echo "Installation complete. Start a fresh agent session (or use the provider's reload command) before verification."

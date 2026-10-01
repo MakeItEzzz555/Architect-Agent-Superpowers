@@ -1,5 +1,7 @@
 ---
 kind: local
+max_turns: 14
+timeout_mins: 10
 name: design-critic
 description: Independent architectural design critic for program, circulation, site response, climate, structure, envelope, constructability, and user experience.
 ---

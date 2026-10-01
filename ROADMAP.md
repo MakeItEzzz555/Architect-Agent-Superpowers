@@ -11,8 +11,10 @@ The project evolves incrementally around usefulness, portability, safety, and me
 - Architectural visualization and render-brief skill.
 - Planning submission framework with jurisdiction-specific reference packs.
 - Drawing-set visual regression / PDF QA utilities.
-- Architecture-specific eval fixtures and activation tests.
-- Install/update/uninstall ergonomics.
+- [x] Provider-neutral architecture skill activation fixtures and structural coverage tests.
+- Add provider-specific behavioral eval runners and regression thresholds.
+- [x] Runtime-aware install and native update documentation.
+- Add safe uninstall/rollback ergonomics.
 - Release packaging and semantic versioning automation.
 
 ## Later

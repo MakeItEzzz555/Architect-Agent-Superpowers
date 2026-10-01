@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "version": "0.1.1",
+  "skills": [
+    {
+      "name": "architecture-orchestrator",
+      "category": "orchestration",
+      "status": "stable"
+    },
+    {
+      "name": "architecture-programming",
+      "category": "programming",
+      "status": "stable"
+    },
+    {
+      "name": "site-regulation-research",
+      "category": "research",
+      "status": "stable"
+    },
+    {
+      "name": "concept-design-review",
+      "category": "design-review",
+      "status": "stable"
+    },
+    {
+      "name": "cad-bim-automation",
+      "category": "automation",
+      "status": "stable"
+    },
+    {
+      "name": "drawing-qa",
+      "category": "quality-assurance",
+      "status": "stable"
+    },
+    {
+      "name": "area-quantity-audit",
+      "category": "quantities",
+      "status": "stable"
+    },
+    {
+      "name": "presentation-review",
+      "category": "presentation",
+      "status": "stable"
+    },
+    {
+      "name": "architecture-red-team",
+      "category": "red-team",
+      "status": "stable"
+    }
+  ]
+}

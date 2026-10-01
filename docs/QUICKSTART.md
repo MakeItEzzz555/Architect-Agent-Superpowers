@@ -14,14 +14,14 @@ macOS/Linux:
 ```bash
 git clone https://github.com/MakeItEzzz555/Architect-Agent-Superpowers.git
 cd Architect-Agent-Superpowers
-bash scripts/install-global.sh all
+bash scripts/install-global.sh auto
 ```
 
 Windows:
 ```powershell
 git clone https://github.com/MakeItEzzz555/Architect-Agent-Superpowers.git
 cd Architect-Agent-Superpowers
-powershell -ExecutionPolicy Bypass -File .\scripts\install-global.ps1 all
+powershell -ExecutionPolicy Bypass -File .\scripts\install-global.ps1 auto
 ```
 
 ## First project
@@ -33,3 +33,13 @@ Then ask naturally:
 - "Research the planning constraints for this site and cite official sources."
 - "Review this concept for circulation, daylight, structure and constructability."
 - "Help me automate this repetitive Revit/IFC/DWG task safely."
+
+
+`auto` installs only for supported CLI runtimes already present on the machine. Use `all` only if you deliberately want all provider directories.
+
+## Native Codex plugin
+
+```bash
+codex plugin marketplace add MakeItEzzz555/Architect-Agent-Superpowers
+codex plugin add architect-agent-superpowers@architect-agent-superpowers
+```

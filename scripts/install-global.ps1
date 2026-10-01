@@ -1,6 +1,6 @@
 param(
-  [ValidateSet("all","codex","claude","gemini")]
-  [string]$Target = "all"
+  [ValidateSet("auto","all","codex","claude","gemini")]
+  [string]$Target = "auto"
 )
 $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
@@ -42,7 +42,16 @@ function Install-Gemini {
   Write-Host "Gemini CLI: installed skills + agents."
 }
 
+function Install-Auto {
+  $Found = $false
+  if (Get-Command codex -ErrorAction SilentlyContinue) { Install-Codex; $Found = $true } else { Write-Host "Codex: not installed, skipped" }
+  if (Get-Command claude -ErrorAction SilentlyContinue) { Install-Claude; $Found = $true } else { Write-Host "Claude Code: not installed, skipped" }
+  if (Get-Command gemini -ErrorAction SilentlyContinue) { Install-Gemini; $Found = $true } else { Write-Host "Gemini CLI: not installed, skipped" }
+  if (-not $Found) { throw "No supported CLI runtime was detected. Install Codex, Claude Code, or Gemini CLI first, or choose an explicit target." }
+}
+
 switch ($Target) {
+  "auto" { Install-Auto }
   "codex" { Install-Codex }
   "claude" { Install-Claude }
   "gemini" { Install-Gemini }

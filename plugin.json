@@ -1,6 +1,21 @@
 {
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "architect-agent-superpowers",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Portable architecture/AEC agent skills for design analysis, planning research, CAD/BIM workflows, drawing QA, quantities, presentations, and red-team review.",
-  "skills": "./skills/"
+  "author": {
+    "name": "Nicolas Savvides",
+    "url": "https://github.com/MakeItEzzz555"
+  },
+  "homepage": "https://github.com/MakeItEzzz555/Architect-Agent-Superpowers",
+  "repository": "https://github.com/MakeItEzzz555/Architect-Agent-Superpowers",
+  "license": "MIT",
+  "keywords": [
+    "architecture",
+    "aec",
+    "bim",
+    "cad",
+    "agent-skills",
+    "design-review"
+  ]
 }

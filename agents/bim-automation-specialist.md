@@ -1,5 +1,7 @@
 ---
 kind: local
+max_turns: 22
+timeout_mins: 10
 name: bim-automation-specialist
 description: CAD/BIM automation specialist for safe Revit, IFC, DWG, DXF, SVG, Blender, FreeCAD, export, batch, and model-data workflows.
 ---

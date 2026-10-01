@@ -1,5 +1,7 @@
 ---
 kind: local
+max_turns: 16
+timeout_mins: 10
 name: drawing-reviewer
 description: Independent drawing-set reviewer for cross-sheet coordination, references, dimensions, schedules, annotations, revisions, and readability.
 ---

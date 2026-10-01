@@ -36,17 +36,17 @@ Skills use progressive disclosure: lightweight metadata is visible first; detail
 ```bash
 git clone https://github.com/MakeItEzzz555/Architect-Agent-Superpowers.git
 cd Architect-Agent-Superpowers
-bash scripts/install-global.sh all
+bash scripts/install-global.sh auto
 ```
 
 ### Windows PowerShell
 ```powershell
 git clone https://github.com/MakeItEzzz555/Architect-Agent-Superpowers.git
 cd Architect-Agent-Superpowers
-powershell -ExecutionPolicy Bypass -File .\scripts\install-global.ps1 all
+powershell -ExecutionPolicy Bypass -File .\scripts\install-global.ps1 auto
 ```
 
-Replace `all` with `codex`, `claude`, or `gemini` to install one provider only.
+`auto` detects installed runtimes and is the safest default for beginners. Use `all` only when you intentionally want all provider directories, or use `codex`, `claude`, or `gemini` for one provider.
 
 ## Native installs
 
@@ -55,16 +55,21 @@ Replace `all` with `codex`, `claude`, or `gemini` to install one provider only.
 gemini extensions install https://github.com/MakeItEzzz555/Architect-Agent-Superpowers
 ```
 
+Optional: add `--auto-update` to let Gemini CLI keep the extension current automatically.
+
 ### Claude Code plugin
 ```bash
 claude plugin marketplace add MakeItEzzz555/Architect-Agent-Superpowers
 claude plugin install architect-agent-superpowers@architect-agent-superpowers
 ```
 
-### Codex
+### Codex native plugin
 ```bash
-bash scripts/install-global.sh codex
+codex plugin marketplace add MakeItEzzz555/Architect-Agent-Superpowers
+codex plugin add architect-agent-superpowers@architect-agent-superpowers
 ```
+
+For a direct user-scope skill copy instead, run `bash scripts/install-global.sh codex`.
 
 ## First architecture project
 

@@ -1,8 +1,30 @@
 {
   "name": "architect-agent-superpowers",
-  "version": "0.1.0",
+  "displayName": "Architect Agent Superpowers",
+  "version": "0.1.1",
   "description": "Architecture/AEC skills and specialist subagents for Claude Code.",
   "author": {
-    "name": "Nicolas Savvides"
-  }
+    "name": "Nicolas Savvides",
+    "url": "https://github.com/MakeItEzzz555"
+  },
+  "homepage": "https://github.com/MakeItEzzz555/Architect-Agent-Superpowers",
+  "repository": "https://github.com/MakeItEzzz555/Architect-Agent-Superpowers",
+  "license": "MIT",
+  "keywords": [
+    "architecture",
+    "aec",
+    "bim",
+    "cad",
+    "claude-code",
+    "agent-skills"
+  ],
+  "skills": "./skills/",
+  "agents": [
+    "./agents/architect-lead.md",
+    "./agents/site-code-researcher.md",
+    "./agents/design-critic.md",
+    "./agents/bim-automation-specialist.md",
+    "./agents/drawing-reviewer.md",
+    "./agents/quantity-auditor.md"
+  ]
 }

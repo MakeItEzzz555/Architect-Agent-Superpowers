@@ -1,5 +1,7 @@
 ---
 kind: local
+max_turns: 20
+timeout_mins: 10
 name: site-code-researcher
 description: Research specialist for site, planning, zoning, building regulations, accessibility, and fire constraints with source traceability.
 ---
