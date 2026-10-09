@@ -26,9 +26,10 @@ jobs:
           mkdir -p "$T/home" "$T/bin"
           for x in codex claude gemini; do printf '#!/usr/bin/env sh\nexit 0\n' > "$T/bin/$x"; chmod +x "$T/bin/$x"; done
           HOME="$T/home" CODEX_HOME="$T/home/.codex" PATH="$T/bin:$PATH" bash scripts/install-global.sh auto
-          test "$(find "$T/home/.codex/skills" -name SKILL.md | wc -l)" -eq 9
-          test "$(find "$T/home/.claude/skills" -name SKILL.md | wc -l)" -eq 9
-          test "$(find "$T/home/.gemini/skills" -name SKILL.md | wc -l)" -eq 9
+          EXPECTED_SKILLS="$(python3 -c 'import json; d=json.load(open("skills/manifest.json")); print(sum(x.get("status")=="stable" for x in d["skills"]))')"
+          test "$(find "$T/home/.codex/skills" -name SKILL.md | wc -l)" -eq "$EXPECTED_SKILLS"
+          test "$(find "$T/home/.claude/skills" -name SKILL.md | wc -l)" -eq "$EXPECTED_SKILLS"
+          test "$(find "$T/home/.gemini/skills" -name SKILL.md | wc -l)" -eq "$EXPECTED_SKILLS"
 
   windows-installer:
     runs-on: windows-latest
@@ -39,8 +40,11 @@ jobs:
         run: |
           $env:CODEX_HOME = Join-Path $env:RUNNER_TEMP "aas-codex"
           .\scripts\install-global.ps1 all
-          if ((Get-ChildItem "$env:CODEX_HOME\skills" -Filter SKILL.md -Recurse).Count -ne 9) { throw "Codex skill count mismatch" }
-          if ((Get-ChildItem "$HOME\.claude\skills" -Filter SKILL.md -Recurse).Count -ne 9) { throw "Claude skill count mismatch" }
-          if ((Get-ChildItem "$HOME\.claude\agents" -Filter *.md).Count -ne 6) { throw "Claude agent count mismatch" }
-          if ((Get-ChildItem "$HOME\.gemini\skills" -Filter SKILL.md -Recurse).Count -ne 9) { throw "Gemini skill count mismatch" }
-          if ((Get-ChildItem "$HOME\.gemini\agents" -Filter *.md).Count -ne 6) { throw "Gemini agent count mismatch" }
+          $Manifest = Get-Content -Raw "skills/manifest.json" | ConvertFrom-Json
+          $ExpectedSkills = @($Manifest.skills | Where-Object { $_.status -eq "stable" }).Count
+          $ExpectedAgents = @(Get-ChildItem "agents" -Filter *.md -File).Count
+          if ((Get-ChildItem "$env:CODEX_HOME\skills" -Filter SKILL.md -Recurse).Count -ne $ExpectedSkills) { throw "Codex skill count mismatch" }
+          if ((Get-ChildItem "$HOME\.claude\skills" -Filter SKILL.md -Recurse).Count -ne $ExpectedSkills) { throw "Claude skill count mismatch" }
+          if ((Get-ChildItem "$HOME\.claude\agents" -Filter *.md).Count -ne $ExpectedAgents) { throw "Claude agent count mismatch" }
+          if ((Get-ChildItem "$HOME\.gemini\skills" -Filter SKILL.md -Recurse).Count -ne $ExpectedSkills) { throw "Gemini skill count mismatch" }
+          if ((Get-ChildItem "$HOME\.gemini\agents" -Filter *.md).Count -ne $ExpectedAgents) { throw "Gemini agent count mismatch" }

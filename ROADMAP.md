@@ -3,7 +3,7 @@
 The project evolves incrementally around usefulness, portability, safety, and measured context cost.
 
 ## Near term
-- Revit / pyRevit / Dynamo workflow skill and reference pack.
+- [x] Revit / pyRevit / Dynamo workflow skill with safe transaction, dry-run, and verification guidance.
 - Rhino / Grasshopper workflow skill.
 - AutoCAD / DWG cleanup and issue-preparation workflow.
 - IFC validation and openBIM coordination workflow.
