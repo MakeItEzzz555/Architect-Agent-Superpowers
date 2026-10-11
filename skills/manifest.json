@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "skills": [
     {
       "name": "architecture-orchestrator",
@@ -50,6 +50,11 @@
     {
       "name": "revit-workflow",
       "category": "bim-workflow",
+      "status": "stable"
+    },
+    {
+      "name": "rhino-grasshopper-workflow",
+      "category": "cad-workflow",
       "status": "stable"
     }
   ]

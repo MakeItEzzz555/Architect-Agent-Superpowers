@@ -20,6 +20,7 @@ Routing:
 - planning/zoning/code/accessibility/fire constraints → `site-regulation-research`
 - design critique/options → `concept-design-review`
 - Revit/pyRevit/Dynamo/Revit API workflows → `revit-workflow`
+- Rhino/Grasshopper/RhinoCommon/Rhino Python geometry workflows → `rhino-grasshopper-workflow`
 - IFC/DWG/DXF/SVG/general CAD-BIM automation → `cad-bim-automation`
 - drawing-set checking → `drawing-qa`
 - areas/schedules/counts/quantities → `area-quantity-audit`
