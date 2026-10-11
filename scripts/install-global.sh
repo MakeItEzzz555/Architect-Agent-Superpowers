@@ -4,8 +4,15 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 TARGET="${1:-auto}"
 STAMP="$(date +%Y%m%d-%H%M%S)"
-SKILLS=(architecture-orchestrator architecture-programming site-regulation-research concept-design-review cad-bim-automation drawing-qa area-quantity-audit presentation-review architecture-red-team)
-AGENTS=(architect-lead site-code-researcher design-critic bim-automation-specialist drawing-reviewer quantity-auditor)
+SKILLS=()
+for skill_dir in "$ROOT"/skills/*; do
+  [ -f "$skill_dir/SKILL.md" ] && SKILLS+=("$(basename "$skill_dir")")
+done
+
+AGENTS=()
+for agent_file in "$ROOT"/agents/*.md; do
+  [ -f "$agent_file" ] && AGENTS+=("$(basename "$agent_file" .md)")
+done
 
 copy_skills() {
   local dest="$1" backup="$2"

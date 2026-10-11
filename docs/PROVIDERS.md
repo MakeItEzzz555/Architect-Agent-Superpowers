@@ -12,10 +12,10 @@ codex plugin add architect-agent-superpowers@architect-agent-superpowers
 The direct installer copies canonical skills into the current user's Codex skill directory. It deliberately does not add permanent routing prose to global AGENTS.md; skill metadata is sufficient for discovery and avoids extra always-on context.
 
 ## Claude Code
-Claude Code supports personal skills, user-level subagents, and plugins. This repository is a Claude marketplace whose plugin lives in `providers/claude`.
+Claude Code supports personal skills, user-level subagents, and plugins. This repository is a Claude marketplace whose plugin lives in `providers/claude`. `scripts/validate-native.sh` runs Claude's strict plugin and marketplace validators when the CLI is available.
 
 ## Gemini CLI
-The repository root is a Gemini CLI extension. Gemini discovers root `skills/` and `agents/` components. Canonical skills can also be copied into user scope.
+The repository root is a Gemini CLI extension. Gemini discovers root `skills/` and `agents/` components. Canonical skills can also be copied into user scope. When Gemini CLI is installed, `scripts/validate-native.sh` runs `gemini extensions validate` against the repository.
 
 ## Other agents
 Canonical `skills/<name>/SKILL.md` directories follow the open Agent Skills pattern: YAML frontmatter plus Markdown instructions. Compatible tools can import or copy these directories.

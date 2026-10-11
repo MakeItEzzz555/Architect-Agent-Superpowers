@@ -14,7 +14,8 @@ Architect Agent Superpowers turns supported coding/agent CLIs into an architectu
 | `architecture-programming` | Briefs, room schedules, adjacency and area programs |
 | `site-regulation-research` | Planning/zoning/code research with source traceability |
 | `concept-design-review` | Design critique and option trade-offs |
-| `cad-bim-automation` | Safe Revit/IFC/DWG/DXF/SVG/BIM automation planning |
+| `cad-bim-automation` | Safe general IFC/DWG/DXF/SVG/BIM automation planning |
+| `revit-workflow` | Revit/pyRevit/Dynamo/API-specific safe automation and review |
 | `drawing-qa` | Cross-sheet drawing-set QA and coordination |
 | `area-quantity-audit` | Areas, counts, schedules and quantity reconciliation |
 | `presentation-review` | Boards, narratives, diagrams and presentation flow |
@@ -93,6 +94,8 @@ This project accelerates research, design analysis, documentation, QA, automatio
 - Source/version traceability for regulations.
 - Human review for consequential decisions.
 - Incremental improvement without prompt bloat.
+
+For maintainers, run `python3 tests/check_repo.py`, `python3 scripts/sync-provider-skills.py --check`, and `bash scripts/validate-native.sh`. The native validator uses Claude strict validation, an isolated Codex marketplace/plugin install, and Gemini extension validation when those CLIs are available.
 
 See [ROADMAP.md](ROADMAP.md), [CONTRIBUTING.md](CONTRIBUTING.md), and [docs/PROVIDERS.md](docs/PROVIDERS.md).
 

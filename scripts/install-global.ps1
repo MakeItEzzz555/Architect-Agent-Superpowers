@@ -5,8 +5,13 @@ param(
 $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 $Stamp = Get-Date -Format "yyyyMMdd-HHmmss"
-$Skills = @("architecture-orchestrator","architecture-programming","site-regulation-research","concept-design-review","cad-bim-automation","drawing-qa","area-quantity-audit","presentation-review","architecture-red-team")
-$Agents = @("architect-lead","site-code-researcher","design-critic","bim-automation-specialist","drawing-reviewer","quantity-auditor")
+$Skills = Get-ChildItem -Path (Join-Path $Root "skills") -Directory |
+  Where-Object { Test-Path (Join-Path $_.FullName "SKILL.md") } |
+  Sort-Object Name |
+  ForEach-Object { $_.Name }
+$Agents = Get-ChildItem -Path (Join-Path $Root "agents") -Filter "*.md" -File |
+  Sort-Object Name |
+  ForEach-Object { $_.BaseName }
 
 function Copy-Skills([string]$Dest,[string]$Backup) {
   New-Item -ItemType Directory -Force -Path $Dest,$Backup | Out-Null

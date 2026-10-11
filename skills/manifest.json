@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "version": "0.1.1",
+  "version": "0.2.0",
   "skills": [
     {
       "name": "architecture-orchestrator",
@@ -45,6 +45,11 @@
     {
       "name": "architecture-red-team",
       "category": "red-team",
+      "status": "stable"
+    },
+    {
+      "name": "revit-workflow",
+      "category": "bim-workflow",
       "status": "stable"
     }
   ]

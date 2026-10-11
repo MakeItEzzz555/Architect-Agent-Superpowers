@@ -44,13 +44,23 @@
     },
     {
       "id": "bim-batch-01",
-      "prompt": "Help me batch-check and rename Revit sheets safely, with a dry run and verification before changing production files.",
+      "prompt": "Help me batch-audit and normalize DWG layer names and exports safely, with a dry run and verification before changing production files.",
       "expected_skill": "cad-bim-automation"
     },
     {
       "id": "bim-ifc-02",
       "prompt": "Extract and validate door and room data from this IFC workflow, preserving units and reporting before/after counts.",
       "expected_skill": "cad-bim-automation"
+    },
+    {
+      "id": "revit-pyrevit-01",
+      "prompt": "Build a safe pyRevit workflow to rename a filtered set of Revit sheets, showing the candidate count, transaction boundaries, dry-run output, and rollback verification before any write.",
+      "expected_skill": "revit-workflow"
+    },
+    {
+      "id": "revit-dynamo-02",
+      "prompt": "Review this Dynamo/Revit parameter-update workflow for storage types, unit handling, worksharing blockers, transaction safety, skipped elements, and before/after verification.",
+      "expected_skill": "revit-workflow"
     },
     {
       "id": "drawingqa-set-01",

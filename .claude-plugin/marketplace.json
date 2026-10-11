@@ -9,7 +9,7 @@
       "name": "architect-agent-superpowers",
       "source": "./providers/claude",
       "description": "Architecture/AEC skills and subagents for design, research, BIM/CAD, QA, quantities, and review.",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "homepage": "https://github.com/MakeItEzzz555/Architect-Agent-Superpowers",
       "repository": "https://github.com/MakeItEzzz555/Architect-Agent-Superpowers"
     }
