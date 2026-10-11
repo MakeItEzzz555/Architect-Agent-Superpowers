@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.0 - 2026-10-11
+- Added the provider-neutral `rhino-grasshopper-workflow` skill for Rhino 3D, Grasshopper, RhinoCommon, and Rhino Python work with explicit data-tree, unit/tolerance, bake/export, verification, and rollback guidance.
+- Routed Rhino/Grasshopper tasks from `architecture-orchestrator` and added activation regression cases, keeping Revit work under `revit-workflow` and general IFC/DWG/DXF/SVG work under `cad-bim-automation`.
+- Marked the Rhino / Grasshopper roadmap milestone complete.
+
 ## 0.2.0 - 2026-10-09
 - Added the provider-neutral `revit-workflow` skill for Revit, pyRevit, Dynamo, and Revit API tasks with explicit dry-run, transaction, worksharing, verification, and rollback guidance.
 - Added Revit-specific routing plus activation regression cases while preserving generic IFC/DWG/DXF/SVG work under `cad-bim-automation`.

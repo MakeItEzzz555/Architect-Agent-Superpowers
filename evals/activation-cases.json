@@ -63,6 +63,16 @@
       "expected_skill": "revit-workflow"
     },
     {
+      "id": "rhino-grasshopper-01",
+      "prompt": "Plan a Grasshopper definition that panelizes a referenced Rhino facade surface, keeping data-tree paths stable, checking units and tolerances, and baking to a new layer without touching the source geometry.",
+      "expected_skill": "rhino-grasshopper-workflow"
+    },
+    {
+      "id": "rhino-python-02",
+      "prompt": "Review this Rhino Python / RhinoCommon script that rebuilds and exports curves for fabrication, checking invalid geometry, object counts, undo safety, and before/after verification.",
+      "expected_skill": "rhino-grasshopper-workflow"
+    },
+    {
       "id": "drawingqa-set-01",
       "prompt": "Review this architectural PDF issue set for broken callouts, inconsistent levels, room tags, dimensions, revisions, and cross-sheet conflicts.",
       "expected_skill": "drawing-qa"
