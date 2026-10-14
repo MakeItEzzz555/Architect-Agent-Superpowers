@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "version": "0.3.0",
+  "version": "0.4.0",
   "skills": [
     {
       "name": "architecture-orchestrator",
@@ -54,6 +54,11 @@
     },
     {
       "name": "rhino-grasshopper-workflow",
+      "category": "cad-workflow",
+      "status": "stable"
+    },
+    {
+      "name": "autocad-dwg-workflow",
       "category": "cad-workflow",
       "status": "stable"
     }

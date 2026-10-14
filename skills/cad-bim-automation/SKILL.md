@@ -1,6 +1,6 @@
 ---
 name: cad-bim-automation
-description: Safely automate repetitive architecture CAD/BIM/model/document workflows using available tools. Use for Revit, IFC, DWG, DXF, SVG, Blender, FreeCAD, batch edits, exports, naming, or model-data extraction.
+description: Safely automate repetitive architecture CAD/BIM/model/document workflows using available tools. Use for IFC, DXF, SVG, Blender, FreeCAD, cross-format DWG exchange, batch edits, exports, naming, or model-data extraction. Route AutoCAD-specific DWG tasks to autocad-dwg-workflow, Revit tasks to revit-workflow, and Rhino/Grasshopper tasks to rhino-grasshopper-workflow.
 ---
 
 # CAD/BIM Automation

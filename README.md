@@ -17,6 +17,7 @@ Architect Agent Superpowers turns supported coding/agent CLIs into an architectu
 | `cad-bim-automation` | Safe general IFC/DWG/DXF/SVG/BIM automation planning |
 | `revit-workflow` | Revit/pyRevit/Dynamo/API-specific safe automation and review |
 | `rhino-grasshopper-workflow` | Rhino/Grasshopper parametric geometry, data-tree, bake and export safety |
+| `autocad-dwg-workflow` | AutoCAD DWG cleanup, blocks/xrefs, layouts, plotting, and safe issue preparation |
 | `drawing-qa` | Cross-sheet drawing-set QA and coordination |
 | `area-quantity-audit` | Areas, counts, schedules and quantity reconciliation |
 | `presentation-review` | Boards, narratives, diagrams and presentation flow |

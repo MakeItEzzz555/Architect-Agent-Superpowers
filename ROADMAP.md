@@ -5,7 +5,7 @@ The project evolves incrementally around usefulness, portability, safety, and me
 ## Near term
 - [x] Revit / pyRevit / Dynamo workflow skill with safe transaction, dry-run, and verification guidance.
 - [x] Rhino / Grasshopper workflow skill with data-tree, unit/tolerance, bake/export safety, and verification guidance.
-- AutoCAD / DWG cleanup and issue-preparation workflow.
+- [x] AutoCAD / DWG cleanup and issue-preparation workflow.
 - IFC validation and openBIM coordination workflow.
 - Site-analysis and climate/passive-design skill.
 - Architectural visualization and render-brief skill.

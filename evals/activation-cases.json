@@ -44,7 +44,7 @@
     },
     {
       "id": "bim-batch-01",
-      "prompt": "Help me batch-audit and normalize DWG layer names and exports safely, with a dry run and verification before changing production files.",
+      "prompt": "Help me batch-audit and normalize DXF layer names and exports safely, with a dry run and verification before changing production files.",
       "expected_skill": "cad-bim-automation"
     },
     {
@@ -111,6 +111,16 @@
       "id": "redteam-submission-02",
       "prompt": "Act as an independent final reviewer of this architecture submission and surface only high-value risks with evidence and required action.",
       "expected_skill": "architecture-red-team"
+    },
+    {
+      "id": "autocad-cleanup-01",
+      "prompt": "Plan an AutoCAD DWG layer and block cleanup using AutoLISP: inventory nested xrefs, dynamic block attributes, annotative scales, and protected survey layers; show a dry-run entity list and reversible copy-based verification.",
+      "expected_skill": "autocad-dwg-workflow"
+    },
+    {
+      "id": "autocad-plot-02",
+      "prompt": "Audit an AutoCAD drawing issue set before PDF plotting: check paper-space layouts, locked viewport scales, CTB/STB styles, missing SHX fonts, xref paths, title-block revisions, and proof plots without overwriting source DWGs.",
+      "expected_skill": "autocad-dwg-workflow"
     },
     {
       "id": "negative-code-01",

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.0 - 2026-10-13
+- Added canonical `autocad-dwg-workflow` for AutoCAD DWG cleanup, xref and block integrity, AutoLISP/.NET automation planning, layout/plot-style verification, proof plotting, and reversible issue preparation.
+- Added dedicated AutoCAD routing and two activation fixtures; kept generic IFC/DXF/SVG and cross-format workflows in `cad-bim-automation`.
+- Synchronized the Claude skill copy and provider/plugin manifest versions, updated the README and roadmap.
+
 ## 0.3.0 - 2026-10-11
 - Added the provider-neutral `rhino-grasshopper-workflow` skill for Rhino 3D, Grasshopper, RhinoCommon, and Rhino Python work with explicit data-tree, unit/tolerance, bake/export, verification, and rollback guidance.
 - Routed Rhino/Grasshopper tasks from `architecture-orchestrator` and added activation regression cases, keeping Revit work under `revit-workflow` and general IFC/DWG/DXF/SVG work under `cad-bim-automation`.
