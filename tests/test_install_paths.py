@@ -31,8 +31,25 @@ class InstallPathTests(unittest.TestCase):
     def tearDown(self):
         self.tmp.cleanup()
 
-    def install(self, *args):
+    def install(self, *args, fail=None, frozen_clock=False):
         env = {**os.environ, "HOME": str(self.home), "CODEX_HOME": str(self.home / ".codex")}
+        shims = Path(self.tmp.name) / "shims"
+        shims.mkdir(exist_ok=True)
+        env["PATH"] = f"{shims}{os.pathsep}{env['PATH']}"
+        if frozen_clock:
+            (shims / "date").write_text("#!/bin/bash\necho 20261021-120000\n")
+            (shims / "date").chmod(0o755)
+        if fail:
+            # Put a cp/mv on PATH that fails while staging or placing drawing-qa, like a full disk would.
+            for tool in ("cp", "mv"):
+                shim = shims / tool
+                shim.write_text(
+                    "#!/bin/bash\n"
+                    f'case "$*" in *drawing-qa.aas-new.*) if [ "{tool}" = "$AAS_FAIL" ]; then '
+                    f'[ "{tool}" = cp ] && /bin/cp "$@"; exit 1; fi ;; esac\n'
+                    f'exec /bin/{tool} "$@"\n')
+                shim.chmod(0o755)
+            env["AAS_FAIL"] = fail
         return subprocess.run(["bash", str(INSTALLER), *args], capture_output=True, text=True, env=env)
 
     def test_every_install_path_ships_a_runnable_drawing_engine(self):
@@ -86,6 +103,31 @@ class InstallPathTests(unittest.TestCase):
         self.assertIn("skills/drawing-qa", ledger)
         self.assertIn("agents/drawing-reviewer.md", ledger)
         self.assertEqual(list(self.home.glob(".gemini/**/*.aas-new.*")), [])
+
+    def test_interrupted_upgrade_keeps_the_previous_version(self):
+        self.assertEqual(self.install("gemini").returncode, 0)
+        installed = self.home / ".gemini" / "skills" / "drawing-qa" / "SKILL.md"
+        for step in ("cp", "mv"):
+            with self.subTest(failing=step):
+                installed.write_text("working older version\n")
+                result = self.install("gemini", fail=step)
+                self.assertEqual(result.returncode, 1)
+                self.assertIn("install stopped", result.stderr)
+                self.assertEqual(installed.read_text(), "working older version\n")
+                self.assertEqual(list(self.home.glob(".gemini/**/*.aas-new.*")), [])
+                self.assertIn("skills/drawing-qa", (self.home / ".gemini" / LEDGER).read_text().split())
+        # The next normal run finishes the upgrade.
+        self.assertEqual(self.install("gemini").returncode, 0)
+        self.assertEqual(installed.read_bytes(), (ROOT / "skills" / "drawing-qa" / "SKILL.md").read_bytes())
+
+    def test_runs_in_the_same_second_get_separate_backups(self):
+        for _ in range(3):
+            self.assertEqual(self.install("codex", frozen_clock=True).returncode, 0)
+        backups = list((self.home / ".codex" / "backups").iterdir())
+        self.assertEqual(len(backups), 2)
+        for folder in backups:
+            self.assertTrue((folder / "skills" / "drawing-qa" / "SKILL.md").is_file())
+            self.assertFalse((folder / "skills" / "drawing-qa" / "drawing-qa").exists())
 
 
 if __name__ == "__main__":

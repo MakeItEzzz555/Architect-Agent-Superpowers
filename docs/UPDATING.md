@@ -22,6 +22,8 @@ The installers stay user-scoped. Each host home gets a `.architect-agent-superpo
 
 If a skill or agent with the same name exists but is not on that list (another pack, a plugin-manager install, or an install made before 0.5.1), the installer changes nothing and exits with code 4, listing the paths. Check those paths first. To replace them anyway, re-run with `--force` (`-Force` on Windows); they are moved to the backup folder.
 
+If an install stops partway (for example, a full disk), every item is either its previous version or the new one, never missing. Items already replaced stay updated; re-run the installer to finish.
+
 To restore an item, move it back from the backup folder over the installed copy.
 
 ## Claude Code plugin

@@ -5,7 +5,8 @@ param(
 )
 $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
-$Stamp = Get-Date -Format "yyyyMMdd-HHmmss"
+# The PID keeps two runs in the same second from sharing a backup folder.
+$Stamp = "$(Get-Date -Format "yyyyMMdd-HHmmss")-$PID"
 # Lists every skill/agent path this pack installed into a host home; only these are replaced without -Force.
 $LedgerName = ".architect-agent-superpowers.installed"
 $Skills = Get-ChildItem -Path (Join-Path $Root "skills") -Directory |
@@ -48,28 +49,48 @@ function Get-Conflicts([string]$HostName) {
   }
 }
 
+function Stop-Install([string]$HostName,[string]$Why,[string]$HomeDir) {
+  throw "${HostName}: install stopped. $Why Items already replaced in this run stay updated and are listed in $HomeDir\$LedgerName; re-run to finish."
+}
+
+# Each item is either its previous version or the new one, never missing: a failed step is undone before stopping.
 function Install-HostItems([string]$HostName) {
   $HomeDir = Get-HostHome $HostName
   $Backup = Join-Path $HomeDir "backups\architect-agent-superpowers-$Stamp"
+  $LedgerPath = Join-Path $HomeDir $LedgerName
   $Count = 0; $Backed = 0
-  $Entries = @(Get-Entries $HostName)
-  foreach ($E in $Entries) {
+  foreach ($E in @(Get-Entries $HostName)) {
     $D = Join-Path $HomeDir $E.Rel
     New-Item -ItemType Directory -Force -Path (Split-Path -Parent $D) | Out-Null
     $Staged = "$D.aas-new.$PID"
     if (Test-Path $Staged) { Remove-Item -Recurse -Force $Staged }
-    Copy-Item -Recurse $E.Src $Staged
-    if (Test-Path $D) {
-      $B = Join-Path $Backup $E.Rel
-      New-Item -ItemType Directory -Force -Path (Split-Path -Parent $B) | Out-Null
-      Move-Item $D $B
-      $Backed++
+    try { Copy-Item -Recurse $E.Src $Staged }
+    catch {
+      if (Test-Path $Staged) { Remove-Item -Recurse -Force $Staged }
+      Stop-Install $HostName "Copying $($E.Rel) failed ($_); the installed copy is unchanged." $HomeDir
     }
-    Move-Item $Staged $D
+    $B = Join-Path $Backup $E.Rel
+    $Moved = $false
+    if (Test-Path $D) {
+      New-Item -ItemType Directory -Force -Path (Split-Path -Parent $B) | Out-Null
+      try { Move-Item $D $B }
+      catch {
+        Remove-Item -Recurse -Force $Staged
+        Stop-Install $HostName "Backing up $($E.Rel) failed ($_); the installed copy is unchanged." $HomeDir
+      }
+      $Moved = $true
+    }
+    try { Move-Item $Staged $D }
+    catch {
+      if ($Moved) { Move-Item $B $D }
+      if (Test-Path $Staged) { Remove-Item -Recurse -Force $Staged }
+      Stop-Install $HostName "Placing the new $($E.Rel) failed ($_); the previous copy was put back." $HomeDir
+    }
+    if ($Moved) { $Backed++ }
+    Add-Content $LedgerPath $E.Rel
     $Count++
   }
-  $LedgerPath = Join-Path $HomeDir $LedgerName
-  (@(Get-Ledger $HomeDir) + @($Entries | ForEach-Object { $_.Rel })) | Sort-Object -Unique | Set-Content "$LedgerPath.tmp"
+  @(Get-Content $LedgerPath) | Sort-Object -Unique | Set-Content "$LedgerPath.tmp"
   Move-Item -Force "$LedgerPath.tmp" $LedgerPath
   Write-Host "${HostName}: installed $Count items under $HomeDir"
   if ($Backed -gt 0) { Write-Host "${HostName}: previous versions of $Backed items moved to $Backup" }
