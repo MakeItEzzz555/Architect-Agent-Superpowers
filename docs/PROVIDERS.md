@@ -1,5 +1,9 @@
 # Provider Support
 
+## Universal Agent Skills
+
+For compatible hosts, use `npx skills@latest add MakeItEzzz555/Architect-Agent-Superpowers --all -g`. Native provider packaging remains available below.
+
 ## OpenAI Codex
 
 Native plugin install:

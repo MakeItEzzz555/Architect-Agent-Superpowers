@@ -16,6 +16,7 @@ Contributions are welcome from architects, students, BIM specialists, engineers,
 ```bash
 python3 scripts/sync-provider-skills.py --check
 python3 tests/check_repo.py
+python3 -m unittest discover -s tests -v
 bash scripts/validate-native.sh
 ```
 

@@ -11,7 +11,7 @@ This repository maintains portable architecture/AEC Agent Skills and provider ad
 - Verify provider formats against current official documentation before changing manifests, install locations, or agent schemas.
 - Keep Claude plugin skill copies synchronized with canonical `skills/`; CI must fail on drift.
 - Prefer additive, backward-compatible changes.
-- Run `python3 tests/check_repo.py` before committing repository changes.
+- Run `python3 tests/check_repo.py` and `python3 -m unittest discover -s tests -v` before committing repository changes.
 
 ## Release discipline
 For substantial changes, update CHANGELOG.md and relevant docs. Keep versions synchronized across provider manifests.

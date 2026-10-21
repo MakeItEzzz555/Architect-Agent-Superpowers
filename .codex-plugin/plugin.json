@@ -1,6 +1,6 @@
 {
   "name": "architect-agent-superpowers",
-  "version": "0.3.0",
+  "version": "0.5.0",
   "description": "Architecture/AEC skills for Codex and compatible OpenAI agent runtimes.",
   "author": {
     "name": "Nicolas Savvides",

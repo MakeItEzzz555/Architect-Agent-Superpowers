@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.0 - 2026-10-21
+- Expanded the canonical architecture/AEC skill suite from 11 to 30 focused skills covering the full project lifecycle.
+- Added site feasibility, precedent research, concept/schematic design, interiors, drawing generation, technical documentation, life safety/accessibility, structural/MEP/civil coordination, envelope/performance, sustainability, materials/specifications, cost/VE, construction administration, handover/FM, visualization, openBIM/IFC and AutoCAD/DWG workflows.
+- Added six specialist subagents for drawing production, civil/site, openBIM, building performance, technical documentation and construction administration.
+- Added a dependency-free JSON-to-SVG/DXF conceptual drawing engine, schema, example and unit tests.
+- Rebuilt the README around beginner-first one-click agent installation, universal Agent Skills installation, native provider paths, lifecycle coverage, tool routing and explicit professional boundaries.
+- Added AEC lifecycle, research, tool-integration and drawing-output documentation plus reusable project/drawing/site/RFI/handover templates.
+- Expanded activation coverage to every stable skill and strengthened repository/CI checks for drawing assets and unit tests.
+
 ## 0.3.0 - 2026-10-11
 - Added the provider-neutral `rhino-grasshopper-workflow` skill for Rhino 3D, Grasshopper, RhinoCommon, and Rhino Python work with explicit data-tree, unit/tolerance, bake/export, verification, and rollback guidance.
 - Routed Rhino/Grasshopper tasks from `architecture-orchestrator` and added activation regression cases, keeping Revit work under `revit-workflow` and general IFC/DWG/DXF/SVG work under `cad-bim-automation`.

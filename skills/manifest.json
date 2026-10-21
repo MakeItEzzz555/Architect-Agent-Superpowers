@@ -1,7 +1,12 @@
 {
   "schemaVersion": 1,
-  "version": "0.3.0",
+  "version": "0.5.0",
   "skills": [
+    {
+      "name": "architectural-drawing-generation",
+      "category": "drawing-production",
+      "status": "stable"
+    },
     {
       "name": "architecture-orchestrator",
       "category": "orchestration",
@@ -13,23 +18,8 @@
       "status": "stable"
     },
     {
-      "name": "site-regulation-research",
-      "category": "research",
-      "status": "stable"
-    },
-    {
-      "name": "concept-design-review",
-      "category": "design-review",
-      "status": "stable"
-    },
-    {
-      "name": "cad-bim-automation",
-      "category": "automation",
-      "status": "stable"
-    },
-    {
-      "name": "drawing-qa",
-      "category": "quality-assurance",
+      "name": "architecture-red-team",
+      "category": "red-team",
       "status": "stable"
     },
     {
@@ -38,13 +28,93 @@
       "status": "stable"
     },
     {
-      "name": "presentation-review",
-      "category": "presentation",
+      "name": "autocad-dwg-workflow",
+      "category": "cad-workflow",
       "status": "stable"
     },
     {
-      "name": "architecture-red-team",
-      "category": "red-team",
+      "name": "building-envelope-performance",
+      "category": "building-performance",
+      "status": "stable"
+    },
+    {
+      "name": "cad-bim-automation",
+      "category": "automation",
+      "status": "stable"
+    },
+    {
+      "name": "civil-site-design",
+      "category": "civil",
+      "status": "stable"
+    },
+    {
+      "name": "concept-design-review",
+      "category": "design-review",
+      "status": "stable"
+    },
+    {
+      "name": "concept-schematic-design",
+      "category": "design",
+      "status": "stable"
+    },
+    {
+      "name": "construction-administration",
+      "category": "delivery",
+      "status": "stable"
+    },
+    {
+      "name": "construction-documentation",
+      "category": "documentation",
+      "status": "stable"
+    },
+    {
+      "name": "cost-planning-value-engineering",
+      "category": "cost",
+      "status": "stable"
+    },
+    {
+      "name": "drawing-qa",
+      "category": "quality-assurance",
+      "status": "stable"
+    },
+    {
+      "name": "handover-fm-postoccupancy",
+      "category": "delivery",
+      "status": "stable"
+    },
+    {
+      "name": "interior-fitout-design",
+      "category": "design",
+      "status": "stable"
+    },
+    {
+      "name": "life-safety-accessibility",
+      "category": "safety-coordination",
+      "status": "stable"
+    },
+    {
+      "name": "materials-specifications",
+      "category": "specifications",
+      "status": "stable"
+    },
+    {
+      "name": "mep-coordination",
+      "category": "engineering-coordination",
+      "status": "stable"
+    },
+    {
+      "name": "openbim-ifc-coordination",
+      "category": "bim-interoperability",
+      "status": "stable"
+    },
+    {
+      "name": "precedent-research",
+      "category": "research",
+      "status": "stable"
+    },
+    {
+      "name": "presentation-review",
+      "category": "presentation",
       "status": "stable"
     },
     {
@@ -55,6 +125,31 @@
     {
       "name": "rhino-grasshopper-workflow",
       "category": "cad-workflow",
+      "status": "stable"
+    },
+    {
+      "name": "site-analysis-feasibility",
+      "category": "site-analysis",
+      "status": "stable"
+    },
+    {
+      "name": "site-regulation-research",
+      "category": "research",
+      "status": "stable"
+    },
+    {
+      "name": "structural-coordination",
+      "category": "engineering-coordination",
+      "status": "stable"
+    },
+    {
+      "name": "sustainability-daylight-energy",
+      "category": "building-performance",
+      "status": "stable"
+    },
+    {
+      "name": "visualization-rendering",
+      "category": "visualization",
       "status": "stable"
     }
   ]

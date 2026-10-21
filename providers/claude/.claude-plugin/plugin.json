@@ -1,7 +1,7 @@
 {
   "name": "architect-agent-superpowers",
   "displayName": "Architect Agent Superpowers",
-  "version": "0.3.0",
+  "version": "0.5.0",
   "description": "Architecture/AEC skills and specialist subagents for Claude Code.",
   "author": {
     "name": "Nicolas Savvides",
@@ -21,10 +21,16 @@
   "skills": "./skills/",
   "agents": [
     "./agents/architect-lead.md",
-    "./agents/site-code-researcher.md",
-    "./agents/design-critic.md",
     "./agents/bim-automation-specialist.md",
+    "./agents/building-performance-reviewer.md",
+    "./agents/civil-site-coordinator.md",
+    "./agents/construction-admin-reviewer.md",
+    "./agents/design-critic.md",
+    "./agents/drawing-producer.md",
     "./agents/drawing-reviewer.md",
-    "./agents/quantity-auditor.md"
+    "./agents/openbim-coordinator.md",
+    "./agents/quantity-auditor.md",
+    "./agents/site-code-researcher.md",
+    "./agents/technical-documentation-reviewer.md"
   ]
 }
