@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.1 - 2026-10-21
+- Fixed: the conceptual drawing engine, its schema and example now ship inside `skills/architectural-drawing-generation/` (`scripts/`, `references/`). Before, the Claude plugin, `npx skills` and global-installer paths installed the skill without the script it calls. Root `scripts/aec_draw.py`, `schemas/` and `examples/concept-plan.drawing.json` moved there.
+- Fixed: provider sync and repository checks compare whole skill folders, not only `SKILL.md`.
+- Installers record what they install, refuse to replace same-named skills or agents they did not install unless `--force`/`-Force` is given, check every host before changing any, and move previous versions to a timestamped backup instead of copy-then-delete. Updating an install made before 0.5.1 needs `--force` once.
+- Tests run the drawing engine from every installed location and cover conflict refusal, forced replacement, restore from backup and updates.
+- `docs/RESEARCH.md` now links its sources; drawing documentation states the six supported primitives.
+
 ## 0.5.0 - 2026-10-21
 - Expanded the canonical architecture/AEC skill suite from 11 to 30 focused skills covering the full project lifecycle.
 - Added site feasibility, precedent research, concept/schematic design, interiors, drawing generation, technical documentation, life safety/accessibility, structural/MEP/civil coordination, envelope/performance, sustainability, materials/specifications, cost/VE, construction administration, handover/FM, visualization, openBIM/IFC and AutoCAD/DWG workflows.

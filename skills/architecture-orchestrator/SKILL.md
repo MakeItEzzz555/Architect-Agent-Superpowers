@@ -60,7 +60,7 @@ When concerns overlap, route safety/regulatory/engineering checks before present
 
 When asked to **draw, draft, blueprint, diagram, plan, section, elevate or detail**:
 1. Prefer a connected native CAD/BIM tool that can create editable project geometry.
-2. If none is available, use `architectural-drawing-generation` and the repository's `scripts/aec_draw.py` structured SVG/DXF fallback when suitable.
+2. If none is available, use `architectural-drawing-generation` and its bundled `scripts/aec_draw.py` SVG/DXF fallback when suitable.
 3. Never invent construction dimensions. Generated fallback drawings must stay labelled conceptual/non-issued until verified.
 
 ## Completion contract

@@ -17,7 +17,10 @@ Keep verified facts, project assumptions, design options, and unresolved questio
 ## Workflow
 
 1. Define drawing extents, hierarchy, layers/categories, lineweight intent, annotation convention and reference data.
-2. Generate geometry from authoritative coordinates/dimensions; use scripts/aec_draw.py for conceptual SVG/DXF fallback when no native CAD/BIM host exists.
+2. Generate geometry from authoritative coordinates/dimensions. When no native CAD/BIM host exists, use the conceptual SVG/DXF fallback bundled with this skill (paths are relative to this SKILL.md's directory):
+   - `scripts/aec_draw.py SPEC.json OUT.svg|OUT.dxf` renders; add `--validate-only` to check a spec without writing.
+   - `references/aec-drawing.schema.json` defines the spec; `references/concept-plan.drawing.json` is a working example.
+   - It draws only `line`, `rect`, `circle`, `polyline`, `text` and `dimension` entities. Wall thickness, door swings, hatching, title blocks and scale bars must be built from those primitives or produced in a native host.
 3. Add dimensions, labels, levels, grids, section/elevation/detail references, legends and notes appropriate to the stage.
 4. Cross-reference related views and schedules; create proof output and visually inspect for clipping, scale, hierarchy and contradictions.
 

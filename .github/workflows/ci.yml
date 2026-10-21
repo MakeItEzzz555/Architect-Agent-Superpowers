@@ -18,7 +18,7 @@ jobs:
       - run: python3 scripts/sync-provider-skills.py --check
       - run: python3 tests/check_repo.py
       - run: python3 -m unittest discover -s tests -v
-      - run: python3 scripts/aec_draw.py examples/concept-plan.drawing.json --validate-only
+      - run: python3 skills/architectural-drawing-generation/scripts/aec_draw.py skills/architectural-drawing-generation/references/concept-plan.drawing.json --validate-only
       - run: bash -n scripts/install-global.sh
       - name: Smoke test auto installer
         shell: bash
@@ -50,3 +50,18 @@ jobs:
           if ((Get-ChildItem "$HOME\.claude\agents" -Filter *.md).Count -ne $ExpectedAgents) { throw "Claude agent count mismatch" }
           if ((Get-ChildItem "$HOME\.gemini\skills" -Filter SKILL.md -Recurse).Count -ne $ExpectedSkills) { throw "Gemini skill count mismatch" }
           if ((Get-ChildItem "$HOME\.gemini\agents" -Filter *.md).Count -ne $ExpectedAgents) { throw "Gemini agent count mismatch" }
+          $Drawing = "$HOME\.claude\skills\architectural-drawing-generation"
+          python "$Drawing\scripts\aec_draw.py" "$Drawing\references\concept-plan.drawing.json" --validate-only
+          if ($LASTEXITCODE -ne 0) { throw "drawing engine did not run from the installed skill" }
+          pwsh -NoProfile -File .\scripts\install-global.ps1 all
+          if ($LASTEXITCODE -ne 0) { throw "reinstall of owned items failed" }
+          $env:CODEX_HOME = Join-Path $env:RUNNER_TEMP "aas-foreign"
+          New-Item -ItemType Directory -Force "$env:CODEX_HOME\skills\drawing-qa" | Out-Null
+          Set-Content "$env:CODEX_HOME\skills\drawing-qa\SKILL.md" "foreign"
+          pwsh -NoProfile -File .\scripts\install-global.ps1 codex
+          if ($LASTEXITCODE -ne 4) { throw "foreign skill did not block install (exit $LASTEXITCODE)" }
+          if ((Get-Content "$env:CODEX_HOME\skills\drawing-qa\SKILL.md") -ne "foreign") { throw "foreign skill was modified" }
+          pwsh -NoProfile -File .\scripts\install-global.ps1 codex -Force
+          if ($LASTEXITCODE -ne 0) { throw "-Force install failed" }
+          $Saved = Get-ChildItem "$env:CODEX_HOME\backups\*\skills\drawing-qa\SKILL.md"
+          if ((Get-Content $Saved.FullName) -ne "foreign") { throw "foreign skill was not backed up" }

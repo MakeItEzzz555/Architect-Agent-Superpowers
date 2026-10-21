@@ -1,0 +1,276 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Architect Agent Superpowers AEC Drawing Spec",
+  "type": "object",
+  "required": [
+    "entities"
+  ],
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "width": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "height": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "units": {
+      "type": "string"
+    },
+    "origin": {
+      "enum": [
+        "top-left",
+        "bottom-left"
+      ]
+    },
+    "status": {
+      "type": "string"
+    },
+    "viewBox": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        }
+      ],
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "layers": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "stroke": {
+            "type": "string"
+          },
+          "stroke_width": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "fill": {
+            "type": "string"
+          },
+          "dash": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "entities": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "type",
+              "x1",
+              "y1",
+              "x2",
+              "y2"
+            ],
+            "properties": {
+              "type": {
+                "const": "line"
+              },
+              "layer": {
+                "type": "string"
+              },
+              "x1": {
+                "type": "number"
+              },
+              "y1": {
+                "type": "number"
+              },
+              "x2": {
+                "type": "number"
+              },
+              "y2": {
+                "type": "number"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "type",
+              "points"
+            ],
+            "properties": {
+              "type": {
+                "const": "polyline"
+              },
+              "layer": {
+                "type": "string"
+              },
+              "points": {
+                "type": "array",
+                "minItems": 2,
+                "items": {
+                  "type": "array",
+                  "prefixItems": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ],
+                  "minItems": 2,
+                  "maxItems": 2
+                }
+              },
+              "closed": {
+                "type": "boolean"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "type",
+              "x",
+              "y",
+              "width",
+              "height"
+            ],
+            "properties": {
+              "type": {
+                "const": "rect"
+              },
+              "layer": {
+                "type": "string"
+              },
+              "x": {
+                "type": "number"
+              },
+              "y": {
+                "type": "number"
+              },
+              "width": {
+                "type": "number"
+              },
+              "height": {
+                "type": "number"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "type",
+              "cx",
+              "cy",
+              "r"
+            ],
+            "properties": {
+              "type": {
+                "const": "circle"
+              },
+              "layer": {
+                "type": "string"
+              },
+              "cx": {
+                "type": "number"
+              },
+              "cy": {
+                "type": "number"
+              },
+              "r": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "type",
+              "x",
+              "y",
+              "text"
+            ],
+            "properties": {
+              "type": {
+                "const": "text"
+              },
+              "layer": {
+                "type": "string"
+              },
+              "x": {
+                "type": "number"
+              },
+              "y": {
+                "type": "number"
+              },
+              "text": {
+                "type": "string"
+              },
+              "size": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "anchor": {
+                "enum": [
+                  "start",
+                  "middle",
+                  "end"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "type",
+              "x1",
+              "y1",
+              "x2",
+              "y2"
+            ],
+            "properties": {
+              "type": {
+                "const": "dimension"
+              },
+              "layer": {
+                "type": "string"
+              },
+              "x1": {
+                "type": "number"
+              },
+              "y1": {
+                "type": "number"
+              },
+              "x2": {
+                "type": "number"
+              },
+              "y2": {
+                "type": "number"
+              },
+              "offset": {
+                "type": "number"
+              },
+              "label": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "additionalProperties": true
+}

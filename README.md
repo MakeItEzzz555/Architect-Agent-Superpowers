@@ -11,7 +11,7 @@
 ![AEC](https://img.shields.io/badge/AEC-architecture%20%2B%20BIM%20%2B%20civil-475569)
 [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-**[Copy the install prompt](#install-with-your-ai-agent-copy-once)** · **[Skills](#the-30-superpowers)** · **[Drawings](#it-can-create-real-vector-drawings)** · **[Tools](#cad--bim--aec-tools)** · **[Research](docs/RESEARCH.md)**
+**[Copy the install prompt](#install-with-your-ai-agent-copy-once)** · **[Skills](#the-30-superpowers)** · **[Drawings](#conceptual-vector-drawings)** · **[Tools](#cad--bim--aec-tools)** · **[Research](docs/RESEARCH.md)**
 
 </div>
 
@@ -139,16 +139,16 @@ Windows users can run `powershell -ExecutionPolicy Bypass -File .\scripts\instal
 | `architecture-red-team` | Independent final challenge before consequential issue/submission |
 
 [Full lifecycle map](docs/AEC_LIFECYCLE.md).
-## It can create real vector drawings
+## Conceptual vector drawings
 
-When a trusted native CAD/BIM host is available, the skills prefer the native editable model. When it is not, the repository includes a dependency-free drawing engine for **conceptual** plans, sections, elevations, details and diagrams:
+When a trusted native CAD/BIM host is available, the skills prefer the native editable model. When it is not, the drawing skill ships a small dependency-free engine that turns an explicit JSON spec into SVG or DXF. It draws six primitives (lines, rectangles, circles, polylines, text and dimensions), enough for **conceptual** plan and section diagrams. It does not model walls, doors, hatching, title blocks or scale bars:
 
 ```bash
-python3 scripts/aec_draw.py examples/concept-plan.drawing.json /tmp/plan.svg
-python3 scripts/aec_draw.py examples/concept-plan.drawing.json /tmp/plan.dxf
+python3 skills/architectural-drawing-generation/scripts/aec_draw.py skills/architectural-drawing-generation/references/concept-plan.drawing.json /tmp/plan.svg
+python3 skills/architectural-drawing-generation/scripts/aec_draw.py skills/architectural-drawing-generation/references/concept-plan.drawing.json /tmp/plan.dxf
 ```
 
-The JSON format is documented by [schemas/aec-drawing.schema.json](schemas/aec-drawing.schema.json). The fallback never invents dimensions and stamps conceptual output **CONCEPT / NOT FOR CONSTRUCTION** by default. [Drawing-output details](docs/DRAWING_OUTPUTS.md).
+The JSON format is documented by [aec-drawing.schema.json](skills/architectural-drawing-generation/references/aec-drawing.schema.json). The fallback never invents dimensions and stamps conceptual output **CONCEPT / NOT FOR CONSTRUCTION** by default. [Drawing-output details](docs/DRAWING_OUTPUTS.md).
 
 ## CAD / BIM / AEC tools
 

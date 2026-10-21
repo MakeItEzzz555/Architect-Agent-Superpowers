@@ -3,7 +3,16 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 TARGET="${1:-auto}"
+FORCE=0
+case "${2:-}" in
+  "") ;;
+  --force) FORCE=1 ;;
+  *) echo "Usage: $0 [auto|all|codex|claude|gemini] [--force]" >&2; exit 2 ;;
+esac
 STAMP="$(date +%Y%m%d-%H%M%S)"
+# Lists every skill/agent path this pack installed into a host home; only these are replaced without --force.
+LEDGER_NAME=".architect-agent-superpowers.installed"
+
 SKILLS=()
 for skill_dir in "$ROOT"/skills/*; do
   [ -f "$skill_dir/SKILL.md" ] && SKILLS+=("$(basename "$skill_dir")")
@@ -14,62 +23,96 @@ for agent_file in "$ROOT"/agents/*.md; do
   [ -f "$agent_file" ] && AGENTS+=("$(basename "$agent_file" .md)")
 done
 
-copy_skills() {
-  local dest="$1" backup="$2"
-  mkdir -p "$dest" "$backup"
-  for name in "${SKILLS[@]}"; do
-    if [ -e "$dest/$name" ]; then cp -R "$dest/$name" "$backup/$name"; rm -rf "$dest/$name"; fi
-    cp -R "$ROOT/skills/$name" "$dest/$name"
-  done
+host_home() {
+  case "$1" in
+    codex) echo "${CODEX_HOME:-$HOME/.codex}" ;;
+    claude) echo "$HOME/.claude" ;;
+    gemini) echo "$HOME/.gemini" ;;
+  esac
 }
 
-copy_agents() {
-  local src="$1" dest="$2" backup="$3"
-  mkdir -p "$dest" "$backup"
-  for name in "${AGENTS[@]}"; do
-    if [ -e "$dest/$name.md" ]; then cp "$dest/$name.md" "$backup/$name.md"; fi
-    cp "$src/$name.md" "$dest/$name.md"
-  done
+agent_source() {
+  case "$1" in
+    claude) echo "$ROOT/providers/claude/agents" ;;
+    gemini) echo "$ROOT/agents" ;;
+    *) echo "" ;;
+  esac
 }
 
-install_codex() {
-  local home="${CODEX_HOME:-$HOME/.codex}"
-  copy_skills "$home/skills" "$home/backups/architect-agent-superpowers-$STAMP/skills"
-  echo "Codex: installed ${#SKILLS[@]} skills to $home/skills"
-}
-
-install_claude() {
-  local home="$HOME/.claude"
-  copy_skills "$home/skills" "$home/backups/architect-agent-superpowers-$STAMP/skills"
-  copy_agents "$ROOT/providers/claude/agents" "$home/agents" "$home/backups/architect-agent-superpowers-$STAMP/agents"
-  echo "Claude Code: installed skills + agents under $home"
-}
-
-install_gemini() {
-  local home="$HOME/.gemini"
-  copy_skills "$home/skills" "$home/backups/architect-agent-superpowers-$STAMP/skills"
-  copy_agents "$ROOT/agents" "$home/agents" "$home/backups/architect-agent-superpowers-$STAMP/agents"
-  echo "Gemini CLI: installed skills + agents under $home"
-}
-
-install_auto() {
-  local found=0
-  if command -v codex >/dev/null 2>&1; then install_codex; found=1; else echo "Codex: not installed, skipped"; fi
-  if command -v claude >/dev/null 2>&1; then install_claude; found=1; else echo "Claude Code: not installed, skipped"; fi
-  if command -v gemini >/dev/null 2>&1; then install_gemini; found=1; else echo "Gemini CLI: not installed, skipped"; fi
-  if [ "$found" -eq 0 ]; then
-    echo "No supported CLI runtime was detected. Install Codex, Claude Code, or Gemini CLI first, or choose an explicit target." >&2
-    exit 3
+# Prints "relative-destination<TAB>source" for everything a host receives.
+entries() {
+  local name src
+  for name in "${SKILLS[@]}"; do printf 'skills/%s\t%s\n' "$name" "$ROOT/skills/$name"; done
+  src="$(agent_source "$1")"
+  if [ -n "$src" ]; then
+    for name in "${AGENTS[@]}"; do printf 'agents/%s.md\t%s\n' "$name" "$src/$name.md"; done
   fi
 }
 
+owned() {
+  local ledger="$1/$LEDGER_NAME"
+  [ -f "$ledger" ] && grep -Fxq "$2" "$ledger"
+}
+
+# Reports paths that exist but were not installed by this pack.
+conflicts() {
+  local home rel _src
+  home="$(host_home "$1")"
+  while IFS=$'\t' read -r rel _src; do
+    if [ -e "$home/$rel" ] && ! owned "$home" "$rel"; then echo "$home/$rel"; fi
+  done < <(entries "$1")
+}
+
+install_host() {
+  local host="$1" home backup rel src staged count=0 backed=0
+  home="$(host_home "$host")"
+  backup="$home/backups/architect-agent-superpowers-$STAMP"
+  while IFS=$'\t' read -r rel src; do
+    mkdir -p "$(dirname "$home/$rel")"
+    staged="$home/$rel.aas-new.$$"
+    rm -rf "$staged"
+    cp -R "$src" "$staged"
+    if [ -e "$home/$rel" ]; then
+      mkdir -p "$(dirname "$backup/$rel")"
+      mv "$home/$rel" "$backup/$rel"
+      backed=$((backed + 1))
+    fi
+    mv "$staged" "$home/$rel"
+    count=$((count + 1))
+  done < <(entries "$host")
+  { [ -f "$home/$LEDGER_NAME" ] && cat "$home/$LEDGER_NAME"; entries "$host" | cut -f1; } | sort -u > "$home/$LEDGER_NAME.tmp"
+  mv "$home/$LEDGER_NAME.tmp" "$home/$LEDGER_NAME"
+  echo "$host: installed $count items under $home"
+  if [ "$backed" -gt 0 ]; then echo "$host: previous versions of $backed items moved to $backup"; fi
+}
+
+HOSTS=()
 case "$TARGET" in
-  auto) install_auto ;;
-  codex) install_codex ;;
-  claude) install_claude ;;
-  gemini) install_gemini ;;
-  all) install_codex; install_claude; install_gemini ;;
-  *) echo "Usage: $0 [auto|all|codex|claude|gemini]" >&2; exit 2 ;;
+  auto)
+    for host in codex claude gemini; do
+      if command -v "$host" >/dev/null 2>&1; then HOSTS+=("$host"); else echo "$host: not installed, skipped"; fi
+    done
+    if [ "${#HOSTS[@]}" -eq 0 ]; then
+      echo "No supported CLI runtime was detected. Install Codex, Claude Code, or Gemini CLI first, or choose an explicit target." >&2
+      exit 3
+    fi
+    ;;
+  codex|claude|gemini) HOSTS=("$TARGET") ;;
+  all) HOSTS=(codex claude gemini) ;;
+  *) echo "Usage: $0 [auto|all|codex|claude|gemini] [--force]" >&2; exit 2 ;;
 esac
 
+# Check every host before changing any of them.
+FOUND=""
+for host in "${HOSTS[@]}"; do FOUND+="$(conflicts "$host")"$'\n'; done
+FOUND="$(printf '%s' "$FOUND" | sed '/^$/d')"
+if [ -n "$FOUND" ] && [ "$FORCE" -ne 1 ]; then
+  echo "These paths exist but were not installed by this installer, so nothing was changed:" >&2
+  printf '%s\n' "$FOUND" | sed 's/^/  /' >&2
+  echo "They may belong to another pack, or to an install made by a plugin manager or an installer older than 0.5.1." >&2
+  echo "Re-run with --force to move them into a timestamped backup folder and replace them." >&2
+  exit 4
+fi
+
+for host in "${HOSTS[@]}"; do install_host "$host"; done
 echo "Installation complete. Start a fresh agent session (or use the provider's reload command) before verification."
