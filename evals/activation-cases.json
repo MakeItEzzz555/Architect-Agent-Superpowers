@@ -121,6 +121,196 @@
       "id": "negative-git-02",
       "prompt": "Summarize the last five Git commits in this software repository.",
       "expected_skill": null
+    },
+    {
+      "id": "site-analysis-feasibility-01",
+      "prompt": "Analyze this surveyed site for access, topography, utilities, climate, constraints/opportunities and realistic development capacity before we design.",
+      "expected_skill": "site-analysis-feasibility"
+    },
+    {
+      "id": "site-analysis-feasibility-02",
+      "prompt": "Turn these survey, GIS and planning inputs into a site feasibility and risk matrix; keep missing geotechnical/drainage evidence explicit.",
+      "expected_skill": "site-analysis-feasibility"
+    },
+    {
+      "id": "precedent-research-01",
+      "prompt": "Research comparable civic buildings in hot climates and compare their plan, section, circulation, structure, envelope and passive-design lessons with sources.",
+      "expected_skill": "precedent-research"
+    },
+    {
+      "id": "precedent-research-02",
+      "prompt": "Build a sourced precedent matrix for adaptive-reuse offices, separating documented project facts from visual interpretation.",
+      "expected_skill": "precedent-research"
+    },
+    {
+      "id": "concept-schematic-design-01",
+      "prompt": "Generate three materially different schematic design options from this brief and site evidence, including parti, massing, floor-plan and section logic.",
+      "expected_skill": "concept-schematic-design"
+    },
+    {
+      "id": "concept-schematic-design-02",
+      "prompt": "Develop the preferred concept into schematic plans, elevations and sections and reconcile its area program without pretending it is construction-ready.",
+      "expected_skill": "concept-schematic-design"
+    },
+    {
+      "id": "interior-fitout-design-01",
+      "prompt": "Develop a workplace fit-out layout with furniture zones, circulation, RCP coordination, finishes and joinery briefs from this shell-and-core plan.",
+      "expected_skill": "interior-fitout-design"
+    },
+    {
+      "id": "interior-fitout-design-02",
+      "prompt": "Coordinate this retail interior's equipment, lighting/ceiling concept, materials and room/finish schedules while flagging accessibility and fire items for review.",
+      "expected_skill": "interior-fitout-design"
+    },
+    {
+      "id": "architectural-drawing-generation-01",
+      "prompt": "Draw a conceptual floor plan and section from these explicit dimensions and levels; produce editable SVG and DXF with dimensions and room labels.",
+      "expected_skill": "architectural-drawing-generation"
+    },
+    {
+      "id": "architectural-drawing-generation-02",
+      "prompt": "Turn this structured geometry into a site plan and elevation, using the repository vector fallback if no native CAD/BIM tool is connected.",
+      "expected_skill": "architectural-drawing-generation"
+    },
+    {
+      "id": "construction-documentation-01",
+      "prompt": "Build a technical drawing-set and sheet register for this design, including plans, sections, elevations, details, schedules, revisions and issue checks.",
+      "expected_skill": "construction-documentation"
+    },
+    {
+      "id": "construction-documentation-02",
+      "prompt": "Coordinate this permit/tender package so callouts, tags, schedules, details and revision metadata reconcile across the drawing set.",
+      "expected_skill": "construction-documentation"
+    },
+    {
+      "id": "life-safety-accessibility-01",
+      "prompt": "Using the adopted local code sources I supplied, review egress routes, exits and accessible routes and make a sourced compliance-question matrix.",
+      "expected_skill": "life-safety-accessibility"
+    },
+    {
+      "id": "life-safety-accessibility-02",
+      "prompt": "Trace this building's accessible path, doors, ramps, sanitary access and life-safety conflicts without certifying compliance.",
+      "expected_skill": "life-safety-accessibility"
+    },
+    {
+      "id": "structural-coordination-01",
+      "prompt": "Coordinate the architectural grid, cores, columns, long spans and facade openings with the structural concept and identify transfer/interface risks.",
+      "expected_skill": "structural-coordination"
+    },
+    {
+      "id": "structural-coordination-02",
+      "prompt": "Review these stacked plans and sections for structural discontinuities, penetrations and column/core conflicts that need engineer decisions.",
+      "expected_skill": "structural-coordination"
+    },
+    {
+      "id": "mep-coordination-01",
+      "prompt": "Coordinate plant rooms, shafts, risers, ceiling zones and major MEP routes against the architecture and structure, then produce a clash/decision log.",
+      "expected_skill": "mep-coordination"
+    },
+    {
+      "id": "mep-coordination-02",
+      "prompt": "Review this RCP and section for lighting, diffusers, sprinklers, access panels and ceiling-service conflicts without doing final MEP calculations.",
+      "expected_skill": "mep-coordination"
+    },
+    {
+      "id": "civil-site-design-01",
+      "prompt": "Coordinate finished-floor levels, grading, accessible entries, roads, parking, drainage and utilities from this survey and civil information.",
+      "expected_skill": "civil-site-design"
+    },
+    {
+      "id": "civil-site-design-02",
+      "prompt": "Review this Civil 3D site workflow for surfaces, feature lines, alignments, corridors and utility dependencies while preserving survey control.",
+      "expected_skill": "civil-site-design"
+    },
+    {
+      "id": "building-envelope-performance-01",
+      "prompt": "Develop control-layer diagrams for this facade/roof/foundation assembly and identify water, air, vapor, thermal bridge and movement risks.",
+      "expected_skill": "building-envelope-performance"
+    },
+    {
+      "id": "building-envelope-performance-02",
+      "prompt": "Review these window, parapet, balcony and foundation details for envelope continuity and testing questions using sourced product data.",
+      "expected_skill": "building-envelope-performance"
+    },
+    {
+      "id": "sustainability-daylight-energy-01",
+      "prompt": "Develop a climate-responsive passive design strategy and compare massing/glazing/shading options using explicit daylight and energy assumptions.",
+      "expected_skill": "sustainability-daylight-energy"
+    },
+    {
+      "id": "sustainability-daylight-energy-02",
+      "prompt": "Create an early sustainability matrix covering daylight, overheating, operational energy, embodied carbon and water, with methods and unknowns.",
+      "expected_skill": "sustainability-daylight-energy"
+    },
+    {
+      "id": "materials-specifications-01",
+      "prompt": "Compare suitable facade materials by performance, durability, maintenance, embodied impact, lead time and installation interfaces, then draft an outline spec.",
+      "expected_skill": "materials-specifications"
+    },
+    {
+      "id": "materials-specifications-02",
+      "prompt": "Turn these selected finishes and product data into a coordinated material schedule and performance specification without inventing certifications.",
+      "expected_skill": "materials-specifications"
+    },
+    {
+      "id": "cost-planning-value-engineering-01",
+      "prompt": "Reconcile this concept area/quantity baseline to the cost plan and create a value-engineering register showing cost delta and design consequences.",
+      "expected_skill": "cost-planning-value-engineering"
+    },
+    {
+      "id": "cost-planning-value-engineering-02",
+      "prompt": "Compare these facade and structural options using dated/location-specific rates and explicit uncertainty rather than made-up current prices.",
+      "expected_skill": "cost-planning-value-engineering"
+    },
+    {
+      "id": "construction-administration-01",
+      "prompt": "Draft a response to this RFI against the current issued drawings and flag whether it is clarification or a design change with downstream updates.",
+      "expected_skill": "construction-administration"
+    },
+    {
+      "id": "construction-administration-02",
+      "prompt": "Review these shop drawings/submittals and site observations, tracking comments, responsibility, revision and punch-list follow-up without directing means and methods.",
+      "expected_skill": "construction-administration"
+    },
+    {
+      "id": "handover-fm-postoccupancy-01",
+      "prompt": "Build a handover matrix for as-builts, O&M manuals, warranties, commissioning records, asset data, training and outstanding defects.",
+      "expected_skill": "handover-fm-postoccupancy"
+    },
+    {
+      "id": "handover-fm-postoccupancy-02",
+      "prompt": "QA this BIM/asset handover for space/equipment IDs, document links, defects and post-occupancy actions without certifying commissioning.",
+      "expected_skill": "handover-fm-postoccupancy"
+    },
+    {
+      "id": "visualization-rendering-01",
+      "prompt": "Create a render brief with cameras, lighting, materials and staged QA for these architecture views, clearly separating exact geometry from illustrative entourage.",
+      "expected_skill": "visualization-rendering"
+    },
+    {
+      "id": "visualization-rendering-02",
+      "prompt": "Plan an Enscape/Twinmotion/V-Ray/Blender visualization workflow that keeps the model revision and material truth visible through post-processing.",
+      "expected_skill": "visualization-rendering"
+    },
+    {
+      "id": "openbim-ifc-coordination-01",
+      "prompt": "Audit this IFC exchange for schema, coordinates, GUIDs, spatial hierarchy, properties and IDS information requirements, then structure BCF issues.",
+      "expected_skill": "openbim-ifc-coordination"
+    },
+    {
+      "id": "openbim-ifc-coordination-02",
+      "prompt": "Plan an IfcOpenShell/Bonsai federation and round-trip check across architecture/structure/MEP without treating a successful export as interoperability proof.",
+      "expected_skill": "openbim-ifc-coordination"
+    },
+    {
+      "id": "autocad-dwg-workflow-01",
+      "prompt": "Audit this AutoCAD DWG for units, xrefs, layers, blocks, layouts, CTB/STB and plotting dependencies before a safe batch cleanup.",
+      "expected_skill": "autocad-dwg-workflow"
+    },
+    {
+      "id": "autocad-dwg-workflow-02",
+      "prompt": "Plan an AutoLISP/.NET workflow to update selected title blocks and sheets using handles/counts, a dry run, new output paths and proof PDFs.",
+      "expected_skill": "autocad-dwg-workflow"
     }
   ]
 }

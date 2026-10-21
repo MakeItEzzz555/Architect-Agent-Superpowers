@@ -3,12 +3,14 @@
 The project evolves incrementally around usefulness, portability, safety, and measured context cost.
 
 ## Near term
+- [x] Full lifecycle skill coverage from briefing/site feasibility through construction administration, handover and post-occupancy.
+- [x] Conceptual SVG/DXF drawing-generation fallback with schema and tests.
 - [x] Revit / pyRevit / Dynamo workflow skill with safe transaction, dry-run, and verification guidance.
 - [x] Rhino / Grasshopper workflow skill with data-tree, unit/tolerance, bake/export safety, and verification guidance.
-- AutoCAD / DWG cleanup and issue-preparation workflow.
-- IFC validation and openBIM coordination workflow.
-- Site-analysis and climate/passive-design skill.
-- Architectural visualization and render-brief skill.
+- [x] AutoCAD / DWG cleanup, authoring and issue-preparation workflow.
+- [x] IFC / BCF / IDS / openBIM coordination workflow.
+- [x] Site-analysis / feasibility and climate/passive-design skills.
+- [x] Architectural visualization and render-brief skill.
 - Planning submission framework with jurisdiction-specific reference packs.
 - Drawing-set visual regression / PDF QA utilities.
 - [x] Provider-neutral architecture skill activation fixtures and structural coverage tests.

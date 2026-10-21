@@ -1,0 +1,116 @@
+{
+  "title": "Conceptual two-room plan",
+  "width": 1000,
+  "height": 650,
+  "units": "mm",
+  "origin": "top-left",
+  "status": "CONCEPT / NOT FOR CONSTRUCTION",
+  "viewBox": [
+    0,
+    0,
+    10000,
+    6500
+  ],
+  "layers": {
+    "walls": {
+      "stroke": "#111111",
+      "stroke_width": 35,
+      "fill": "none"
+    },
+    "openings": {
+      "stroke": "#444444",
+      "stroke_width": 12,
+      "fill": "none"
+    },
+    "dimensions": {
+      "stroke": "#555555",
+      "stroke_width": 6,
+      "fill": "none"
+    },
+    "text": {
+      "stroke": "#111111",
+      "stroke_width": 1,
+      "fill": "none"
+    }
+  },
+  "entities": [
+    {
+      "type": "rect",
+      "layer": "walls",
+      "x": 500,
+      "y": 500,
+      "width": 8500,
+      "height": 5000
+    },
+    {
+      "type": "line",
+      "layer": "walls",
+      "x1": 5000,
+      "y1": 500,
+      "x2": 5000,
+      "y2": 5500
+    },
+    {
+      "type": "line",
+      "layer": "openings",
+      "x1": 4600,
+      "y1": 5500,
+      "x2": 5400,
+      "y2": 5500
+    },
+    {
+      "type": "line",
+      "layer": "openings",
+      "x1": 2000,
+      "y1": 500,
+      "x2": 3500,
+      "y2": 500
+    },
+    {
+      "type": "line",
+      "layer": "openings",
+      "x1": 6500,
+      "y1": 500,
+      "x2": 8000,
+      "y2": 500
+    },
+    {
+      "type": "text",
+      "layer": "text",
+      "x": 2750,
+      "y": 3000,
+      "text": "ROOM A",
+      "size": 220,
+      "anchor": "middle"
+    },
+    {
+      "type": "text",
+      "layer": "text",
+      "x": 7000,
+      "y": 3000,
+      "text": "ROOM B",
+      "size": 220,
+      "anchor": "middle"
+    },
+    {
+      "type": "dimension",
+      "layer": "dimensions",
+      "x1": 500,
+      "y1": 5500,
+      "x2": 9000,
+      "y2": 5500,
+      "offset": 450,
+      "label": "8500"
+    },
+    {
+      "type": "dimension",
+      "layer": "dimensions",
+      "x1": 500,
+      "y1": 500,
+      "x2": 500,
+      "y2": 5500,
+      "offset": -450,
+      "label": "5000"
+    }
+  ]
+}

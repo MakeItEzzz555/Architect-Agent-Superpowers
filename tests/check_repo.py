@@ -64,6 +64,10 @@ for skill in (ROOT / "skills").glob("*/SKILL.md"):
         continue
     name = re.search(r"^name:\s*(.+)$", fm.group(1), re.M)
     desc = re.search(r"^description:\s*(.+)$", fm.group(1), re.M)
+    if desc:
+        raw_desc = desc.group(1).strip()
+        if ": " in raw_desc and not (raw_desc.startswith('"') and raw_desc.endswith('"')):
+            errors.append(f"{skill.relative_to(ROOT)}: description containing colon-space must be YAML-quoted")
     if not name or not desc:
         errors.append(f"{skill.relative_to(ROOT)}: name/description required")
     else:
@@ -126,6 +130,24 @@ for name, count in coverage.items():
         errors.append(f"eval coverage: {name} has {count} positive cases; need >=2")
 if negative < 2:
     errors.append("eval coverage: need at least two negative controls")
+
+for required in (
+    ROOT / "scripts" / "aec_draw.py",
+    ROOT / "schemas" / "aec-drawing.schema.json",
+    ROOT / "examples" / "concept-plan.drawing.json",
+    ROOT / "INSTALL_PROMPT.md",
+    ROOT / "docs" / "AEC_LIFECYCLE.md",
+    ROOT / "docs" / "TOOL_INTEGRATIONS.md",
+    ROOT / "docs" / "DRAWING_OUTPUTS.md",
+    ROOT / "docs" / "RESEARCH.md",
+):
+    if not required.exists():
+        errors.append(f"required AEC asset missing: {required.relative_to(ROOT)}")
+
+if "architectural-drawing-generation" in expected:
+    drawing_skill = (ROOT / "skills" / "architectural-drawing-generation" / "SKILL.md").read_text()
+    if "scripts/aec_draw.py" not in drawing_skill:
+        errors.append("architectural-drawing-generation must reference scripts/aec_draw.py")
 
 if errors:
     print("\n".join("ERROR: " + e for e in errors))
