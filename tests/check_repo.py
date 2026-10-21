@@ -75,11 +75,10 @@ for skill in (ROOT / "skills").glob("*/SKILL.md"):
 if found != expected:
     errors.append(f"canonical skill set mismatch: registry={sorted(expected)} files={sorted(found)}")
 
-for name in expected:
-    src = ROOT / "skills" / name / "SKILL.md"
-    dst = ROOT / "providers" / "claude" / "skills" / name / "SKILL.md"
-    if not dst.exists() or src.read_bytes() != dst.read_bytes():
-        errors.append(f"Claude skill drift: {name}")
+sys.path.insert(0, str(ROOT / "scripts"))
+sync = __import__("sync-provider-skills")
+for name in sync.drift():
+    errors.append(f"Claude skill drift (whole folder): {name}")
 
 claude = manifests[ROOT / "providers" / "claude" / ".claude-plugin" / "plugin.json"]
 if claude.get("skills") != "./skills/":
@@ -132,9 +131,9 @@ if negative < 2:
     errors.append("eval coverage: need at least two negative controls")
 
 for required in (
-    ROOT / "scripts" / "aec_draw.py",
-    ROOT / "schemas" / "aec-drawing.schema.json",
-    ROOT / "examples" / "concept-plan.drawing.json",
+    ROOT / "skills" / "architectural-drawing-generation" / "scripts" / "aec_draw.py",
+    ROOT / "skills" / "architectural-drawing-generation" / "references" / "aec-drawing.schema.json",
+    ROOT / "skills" / "architectural-drawing-generation" / "references" / "concept-plan.drawing.json",
     ROOT / "INSTALL_PROMPT.md",
     ROOT / "docs" / "AEC_LIFECYCLE.md",
     ROOT / "docs" / "TOOL_INTEGRATIONS.md",

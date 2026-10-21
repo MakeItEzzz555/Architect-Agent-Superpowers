@@ -5,7 +5,8 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-MODULE_PATH = ROOT / "scripts" / "aec_draw.py"
+SKILL = ROOT / "skills" / "architectural-drawing-generation"
+MODULE_PATH = SKILL / "scripts" / "aec_draw.py"
 spec = importlib.util.spec_from_file_location("aec_draw", MODULE_PATH)
 aec_draw = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(aec_draw)
@@ -13,7 +14,7 @@ spec.loader.exec_module(aec_draw)
 
 class AecDrawTests(unittest.TestCase):
     def setUp(self):
-        self.example = aec_draw.load_spec(ROOT / "examples" / "concept-plan.drawing.json")
+        self.example = aec_draw.load_spec(SKILL / "references" / "concept-plan.drawing.json")
 
     def test_svg_contains_geometry_and_status(self):
         svg = aec_draw.render_svg(self.example)
