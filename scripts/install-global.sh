@@ -9,7 +9,8 @@ case "${2:-}" in
   --force) FORCE=1 ;;
   *) echo "Usage: $0 [auto|all|codex|claude|gemini] [--force]" >&2; exit 2 ;;
 esac
-STAMP="$(date +%Y%m%d-%H%M%S)"
+# The PID keeps two runs in the same second from sharing a backup folder.
+STAMP="$(date +%Y%m%d-%H%M%S)-$$"
 # Lists every skill/agent path this pack installed into a host home; only these are replaced without --force.
 LEDGER_NAME=".architect-agent-superpowers.installed"
 
@@ -63,24 +64,43 @@ conflicts() {
   done < <(entries "$1")
 }
 
+failed() {
+  echo "$1: install stopped. $2 Items already replaced in this run stay updated and are listed in $3/$LEDGER_NAME; re-run to finish." >&2
+  exit 1
+}
+
+# Each item is either its previous version or the new one, never missing: a failed step is undone before stopping.
 install_host() {
-  local host="$1" home backup rel src staged count=0 backed=0
+  local host="$1" home backup rel src staged moved count=0 backed=0
   home="$(host_home "$host")"
   backup="$home/backups/architect-agent-superpowers-$STAMP"
   while IFS=$'\t' read -r rel src; do
     mkdir -p "$(dirname "$home/$rel")"
     staged="$home/$rel.aas-new.$$"
     rm -rf "$staged"
-    cp -R "$src" "$staged"
+    if ! cp -R "$src" "$staged"; then
+      rm -rf "$staged"
+      failed "$host" "Copying $rel failed; the installed $rel is unchanged." "$home"
+    fi
+    moved=0
     if [ -e "$home/$rel" ]; then
       mkdir -p "$(dirname "$backup/$rel")"
-      mv "$home/$rel" "$backup/$rel"
-      backed=$((backed + 1))
+      if ! mv "$home/$rel" "$backup/$rel"; then
+        rm -rf "$staged"
+        failed "$host" "Backing up $rel failed; the installed $rel is unchanged." "$home"
+      fi
+      moved=1
     fi
-    mv "$staged" "$home/$rel"
+    if ! mv "$staged" "$home/$rel"; then
+      if [ "$moved" -eq 1 ]; then mv "$backup/$rel" "$home/$rel"; fi
+      rm -rf "$staged"
+      failed "$host" "Placing the new $rel failed; the previous $rel was put back." "$home"
+    fi
+    backed=$((backed + moved))
+    echo "$rel" >> "$home/$LEDGER_NAME"
     count=$((count + 1))
   done < <(entries "$host")
-  { [ -f "$home/$LEDGER_NAME" ] && cat "$home/$LEDGER_NAME"; entries "$host" | cut -f1; } | sort -u > "$home/$LEDGER_NAME.tmp"
+  sort -u "$home/$LEDGER_NAME" > "$home/$LEDGER_NAME.tmp"
   mv "$home/$LEDGER_NAME.tmp" "$home/$LEDGER_NAME"
   echo "$host: installed $count items under $home"
   if [ "$backed" -gt 0 ]; then echo "$host: previous versions of $backed items moved to $backup"; fi

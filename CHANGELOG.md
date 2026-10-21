@@ -3,8 +3,8 @@
 ## 0.5.1 - 2026-10-21
 - Fixed: the conceptual drawing engine, its schema and example now ship inside `skills/architectural-drawing-generation/` (`scripts/`, `references/`). Before, the Claude plugin, `npx skills` and global-installer paths installed the skill without the script it calls. Root `scripts/aec_draw.py`, `schemas/` and `examples/concept-plan.drawing.json` moved there.
 - Fixed: provider sync and repository checks compare whole skill folders, not only `SKILL.md`.
-- Installers record what they install, refuse to replace same-named skills or agents they did not install unless `--force`/`-Force` is given, check every host before changing any, and move previous versions to a timestamped backup instead of copy-then-delete. Updating an install made before 0.5.1 needs `--force` once.
-- Tests run the drawing engine from every installed location and cover conflict refusal, forced replacement, restore from backup and updates.
+- Installers record what they install, refuse to replace same-named skills or agents they did not install unless `--force`/`-Force` is given, check every host before changing any, and move previous versions to a timestamped backup instead of copy-then-delete. If a copy or move fails, that item's previous version is put back and the staged copy removed, so an interrupted upgrade never leaves a skill missing; the ledger records each item as it is replaced. Backup folders include the process ID, so runs in the same second never share one. Updating an install made before 0.5.1 needs `--force` once.
+- Tests run the drawing engine from every installed location (including a real `npx skills add --copy` check done for this release) and cover conflict refusal, forced replacement, restore from backup, updates, failures injected while copying or placing an item, and same-second runs.
 - `docs/RESEARCH.md` now links its sources; drawing documentation states the six supported primitives.
 
 ## 0.5.0 - 2026-10-21
