@@ -6,7 +6,7 @@
 
 **30 portable AI Agent Skills + 12 specialist agents for architecture, BIM, CAD and multidisciplinary AEC workflows.**
 
-[![validate](https://github.com/MakeItEzzz555/Architect-Agent-Superpowers/actions/workflows/ci.yml/badge.svg)](https://github.com/MakeItEzzz555/Architect-Agent-Superpowers/actions/workflows/ci.yml)
+[![validate](https://github.com/MakeItEzzz555/Gridline/actions/workflows/ci.yml/badge.svg)](https://github.com/MakeItEzzz555/Gridline/actions/workflows/ci.yml)
 ![Agent Skills](https://img.shields.io/badge/Agent%20Skills-portable-2563eb)
 ![AEC](https://img.shields.io/badge/AEC-architecture%20%2B%20BIM%20%2B%20civil-475569)
 [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
@@ -28,12 +28,12 @@ It is not one giant “act like an architect” prompt. Each specialist is disco
 <!-- AGENT_INSTALL_PROMPT_START -->
 ```text
 Install Gridline for my current user.
-Official source: https://github.com/MakeItEzzz555/Architect-Agent-Superpowers
+Official source: https://github.com/MakeItEzzz555/Gridline
 
 First inspect the official README, INSTALL_PROMPT.md, skills/manifest.json and installer/provider docs. Detect which compatible agent runtimes are already installed.
 
 Prefer the standard Agent Skills installer when supported:
-npx skills@latest add MakeItEzzz555/Architect-Agent-Superpowers --all -g
+npx skills@latest add MakeItEzzz555/Gridline --all -g
 
 Otherwise use this repository's documented native Codex/Claude/Gemini method or reversible global installer. Preserve existing skills/configuration and back up conflicts. Do not use sudo/root, modify my architecture projects, read credentials, delete unrelated skills, or install third-party MCP servers/plugins.
 
@@ -49,39 +49,39 @@ Stop rather than guessing if a command, path, host or permission model is unclea
 For Agent Skills hosts supported by the community `skills` installer:
 
 ```bash
-npx skills@latest add MakeItEzzz555/Architect-Agent-Superpowers --all -g
+npx skills@latest add MakeItEzzz555/Gridline --all -g
 ```
 
 To opt out of that CLI's documented anonymous telemetry:
 
 ```bash
-DISABLE_TELEMETRY=1 npx skills@latest add MakeItEzzz555/Architect-Agent-Superpowers --all -g
+DISABLE_TELEMETRY=1 npx skills@latest add MakeItEzzz555/Gridline --all -g
 ```
 
 ### Native provider installs
 
 **Codex**
 ```bash
-codex plugin marketplace add MakeItEzzz555/Architect-Agent-Superpowers
-codex plugin add architect-agent-superpowers@architect-agent-superpowers
+codex plugin marketplace add MakeItEzzz555/Gridline
+codex plugin add gridline@gridline
 ```
 
 **Claude Code**
 ```bash
-claude plugin marketplace add MakeItEzzz555/Architect-Agent-Superpowers
-claude plugin install architect-agent-superpowers@architect-agent-superpowers
+claude plugin marketplace add MakeItEzzz555/Gridline
+claude plugin install gridline@gridline
 ```
 
 **Gemini CLI**
 ```bash
-gemini extensions install https://github.com/MakeItEzzz555/Architect-Agent-Superpowers
+gemini extensions install https://github.com/MakeItEzzz555/Gridline
 ```
 
 Or clone once and let the repository detect installed runtimes:
 
 ```bash
-git clone https://github.com/MakeItEzzz555/Architect-Agent-Superpowers.git
-cd Architect-Agent-Superpowers
+git clone https://github.com/MakeItEzzz555/Gridline.git
+cd Gridline
 bash scripts/install-global.sh auto
 ```
 
