@@ -99,6 +99,42 @@ class CoordinatedCadTests(unittest.TestCase):
         self.assertIn("non-standard layer 'WALLS'", checked.stdout)
         self.assertIn("DRAWN is empty", checked.stdout)
 
+    def test_check_catches_stale_window_height_type_and_sill(self):
+        self.assertEqual(self.build_and_check(EXAMPLE).returncode, 0)
+        path = self.out / "window-schedule.csv"
+        rows = list(csv.DictReader(path.open(newline="", encoding="utf-8")))
+        rows[0]["height_mm"] = "999"
+        rows[0]["type"] = "Stale window type"
+        rows[0]["sill_mm"] = "999"
+        with path.open("w", newline="", encoding="utf-8") as out:
+            writer = csv.DictWriter(out, fieldnames=rows[0])
+            writer.writeheader()
+            writer.writerows(rows)
+        checked = run("check", EXAMPLE, self.out)
+        self.assertEqual(checked.returncode, 1)
+        self.assertIn("window-schedule.csv does not match spec fields", checked.stdout)
+
+    def test_check_catches_duplicate_schedule_rows(self):
+        self.assertEqual(self.build_and_check(EXAMPLE).returncode, 0)
+        path = self.out / "window-schedule.csv"
+        rows = path.read_text(encoding="utf-8").splitlines()
+        path.write_text("\n".join([*rows, rows[1], ""]), encoding="utf-8")
+        checked = run("check", EXAMPLE, self.out)
+        self.assertEqual(checked.returncode, 1)
+        self.assertIn("duplicate or missing IDs", checked.stdout)
+
+    def test_check_catches_stale_revision_in_one_sheet(self):
+        self.assertEqual(self.build_and_check(EXAMPLE).returncode, 0)
+        path = self.out / "A-102.dxf"
+        doc = ezdxf.readfile(path)
+        block = next(e for e in doc.layouts.get("A-102").query("INSERT")
+                     if e.dxf.name == "AAS-TITLE-BLOCK")
+        next(a for a in block.attribs if a.dxf.tag == "REVISION").dxf.text = "OLD"
+        doc.saveas(path)
+        checked = run("check", EXAMPLE, self.out)
+        self.assertEqual(checked.returncode, 1)
+        self.assertIn("A-102: title block REVISION differs", checked.stdout)
+
     def test_incomplete_spec_reports_errors_instead_of_crashing(self):
         def strip(d):
             del d["openings"]
