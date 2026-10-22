@@ -1,6 +1,6 @@
 # Drawing and Blueprint Outputs
 
-Architect Agent Superpowers can help plan site plans, floor plans, roof plans, reflected ceiling plans, elevations, sections, construction details, diagrams and schedules. Complete, editable drawings come from a connected native CAD/BIM host; the bundled fallback produces simple conceptual vector drawings.
+Gridline can help plan site plans, floor plans, roof plans, reflected ceiling plans, elevations, sections, construction details, diagrams and schedules. Complete, editable drawings come from a connected native CAD/BIM host; the bundled fallback produces simple conceptual vector drawings.
 
 ## Authoring priority
 
