@@ -12,7 +12,9 @@ esac
 # The PID keeps two runs in the same second from sharing a backup folder.
 STAMP="$(date +%Y%m%d-%H%M%S)-$$"
 # Lists every skill/agent path this pack installed into a host home; only these are replaced without --force.
-LEDGER_NAME=".architect-agent-superpowers.installed"
+LEDGER_NAME=".gridline.installed"
+# Retain per-path ownership information from installations using the former brand.
+LEGACY_LEDGER_NAME=".architect-agent-superpowers.installed"
 
 SKILLS=()
 for skill_dir in "$ROOT"/skills/*; do
@@ -52,7 +54,7 @@ entries() {
 
 owned() {
   local ledger="$1/$LEDGER_NAME"
-  [ -f "$ledger" ] && grep -Fxq "$2" "$ledger"
+  { [ -f "$ledger" ] && grep -Fxq "$2" "$ledger"; } || { [ -f "$1/$LEGACY_LEDGER_NAME" ] && grep -Fxq "$2" "$1/$LEGACY_LEDGER_NAME"; }
 }
 
 # Reports paths that exist but were not installed by this pack.
@@ -73,7 +75,7 @@ failed() {
 install_host() {
   local host="$1" home backup rel src staged moved count=0 backed=0
   home="$(host_home "$host")"
-  backup="$home/backups/architect-agent-superpowers-$STAMP"
+  backup="$home/backups/gridline-$STAMP"
   while IFS=$'\t' read -r rel src; do
     mkdir -p "$(dirname "$home/$rel")"
     staged="$home/$rel.aas-new.$$"
