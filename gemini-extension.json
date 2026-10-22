@@ -1,6 +1,6 @@
 {
   "name": "architect-agent-superpowers",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "Architecture/AEC skills and specialist subagents for Gemini CLI.",
   "contextFileName": "GEMINI.md"
 }

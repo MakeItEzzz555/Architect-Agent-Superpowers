@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.6.0 - 2026-10-22
+- Added a coordinated CAD pipeline to `architectural-drawing-generation` (`scripts/aec_cad.py`). One building spec produces, per sheet, a DXF (model-space plan plus a paper-space sheet with a frame using ISO 5457 margins, a title block within ISO 7200's 180 mm width, status stamp, scale bar, north arrow and a locked viewport at scale) and a vector PDF, plus room/door/window schedules and a sheet register.
+- Added `aec_cad.py check`, which reads the outputs back and fails on off-standard layers, colour/lineweight overrides, text below 2.5 mm plotted, empty title fields, missing stamps or viewports, and tags, room areas, schedules or registers that disagree with the geometry.
+- Added standards profiles (`references/standards/iso13567.json`, `ncs.json`) and office profiles that `extend` them.
+- The drawing skill now applies drafting defaults without being asked (line hierarchy, text sizes, tags, dimension chains, grids, sheets, status stamps) and requires a passing check before presenting a drawing.
+- Optional dependency: `ezdxf` (and `matplotlib` for PDF). Without them the pipeline exits with an install message and `aec_draw.py` remains available.
+
 ## 0.5.1 - 2026-10-21
 - Fixed: the conceptual drawing engine, its schema and example now ship inside `skills/architectural-drawing-generation/` (`scripts/`, `references/`). Before, the Claude plugin, `npx skills` and global-installer paths installed the skill without the script it calls. Root `scripts/aec_draw.py`, `schemas/` and `examples/concept-plan.drawing.json` moved there.
 - Fixed: provider sync and repository checks compare whole skill folders, not only `SKILL.md`.
