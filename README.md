@@ -1,6 +1,6 @@
 <div align="center">
 
-# Architect Agent Superpowers
+<img src="assets/brand/gridline-logo.png" alt="Gridline — architectural drafting logo and wordmark" width="720" />
 
 ### From brief to blueprint to handover.
 
@@ -17,7 +17,7 @@
 
 ---
 
-Architect Agent Superpowers gives capable AI coding/agent tools a structured way to help with the **full building-project lifecycle**: programming and feasibility, site analysis, concept design, plans/sections/elevations, BIM/CAD workflows, structural/MEP/civil coordination, technical documentation, performance, quantities/cost, construction administration, handover and post-occupancy.
+Gridline gives capable AI coding/agent tools a structured way to help with the **full building-project lifecycle**: programming and feasibility, site analysis, concept design, plans/sections/elevations, BIM/CAD workflows, structural/MEP/civil coordination, technical documentation, performance, quantities/cost, construction administration, handover and post-occupancy.
 
 It is not one giant “act like an architect” prompt. Each specialist is discovered only when relevant, keeping the always-loaded context small and the workflow auditable.
 
@@ -27,7 +27,7 @@ It is not one giant “act like an architect” prompt. Each specialist is disco
 
 <!-- AGENT_INSTALL_PROMPT_START -->
 ```text
-Install Architect Agent Superpowers for my current user.
+Install Gridline for my current user.
 Official source: https://github.com/MakeItEzzz555/Architect-Agent-Superpowers
 
 First inspect the official README, INSTALL_PROMPT.md, skills/manifest.json and installer/provider docs. Detect which compatible agent runtimes are already installed.
@@ -37,7 +37,7 @@ npx skills@latest add MakeItEzzz555/Architect-Agent-Superpowers --all -g
 
 Otherwise use this repository's documented native Codex/Claude/Gemini method or reversible global installer. Preserve existing skills/configuration and back up conflicts. Do not use sudo/root, modify my architecture projects, read credentials, delete unrelated skills, or install third-party MCP servers/plugins.
 
-Install only Architect Agent Superpowers for the detected hosts. Verify the installed stable-skill count against skills/manifest.json and use documented provider list/validate commands when available. Report PASS/FAIL per host, installed and backup paths, update/uninstall instructions, and whether I need to reload or start a fresh session.
+Install only Gridline for the detected hosts. Verify the installed stable-skill count against skills/manifest.json and use documented provider list/validate commands when available. Report PASS/FAIL per host, installed and backup paths, update/uninstall instructions, and whether I need to reload or start a fresh session.
 
 Stop rather than guessing if a command, path, host or permission model is unclear. Do not claim installation succeeded until the filesystem/provider confirms it.
 ```
@@ -252,7 +252,7 @@ This is an open-source professional-assistance toolkit, not a substitute for app
 
 <div align="center">
 
-**Architect Agent Superpowers — AI assistance for the whole AEC workflow, with evidence and review gates.**
+**Gridline — AI assistance for the whole AEC workflow, with evidence and review gates.**
 
 *Community project. Not affiliated with Autodesk, McNeel, Graphisoft, Nemetschek, buildingSMART, OpenAI, Anthropic or Google.*
 
