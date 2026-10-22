@@ -10,6 +10,42 @@ Two real architectural problems should drive the next work:
 
 A third research objective is **scanned / hand-marked plan reconstruction**. This is inherently uncertain; unscaled scans, handwriting, erasures and non-orthogonal photographs require confidence flags, calibration, user confirmation and geometry review before generating any BIM element.
 
+## Additional community feedback: state safety and native DXF readback
+
+Two further community comments raised separate release-quality concerns: (a) when agents hallucinate or compete during design edits, **who controls authoritative project state?**, and (b) **do generated DXF files really open and behave cleanly in AutoCAD?**
+
+### P0 — Authoritative state and deterministic transaction gate
+
+**Research-backed design requirements** (tracked in [#15](https://github.com/MakeItEzzz555/Gridline/issues/15)):
+
+1. Keep a canonical model/spec revision with units, datum/CRS, topology, constraints, unresolved assumptions, element IDs and provenance **outside model chat/session context**. An AI response is not a committed design state.
+2. Every agent proposes a typed, reviewable patch against an **expected revision hash**: old/new element attributes, exact targets, dependency impact and evidence. A deterministic validator enforces constraints before any write. Unknown site/structural dimensions or conflicting levels must block the operation, not be filled by a guess.
+3. Use optimistic concurrency to prevent two agents from silently overwriting one another. Before committing any patch, compare the current authoritative revision with the proposal base; on conflicts, return a structured rejection/rebase request. Append-only event history (accepted/rejected/approved/rolled back) makes rollback and audit possible.
+4. Map stable internal identities to host-native identifiers (e.g., Revit UniqueId, IFC GlobalId, CAD handles) using explicit, separately validated mapping tables. Neither exported DXF handles nor IFC metadata constitute a cross-application revision system.
+5. Use local host-native transactions for approved mutations, not a sequence of uncontrolled MCP calls. **Revit API `Transaction`, `SubTransaction` and `TransactionGroup` support commit/rollback**, but Autodesk also documents failure processing at commit time; success must be confirmed after host-side processing and readback. Equivalent AutoCAD operations need their own verified transaction/undo pathway.
+6. Make read/dry-run the default tool scope. Approve an exact diff and limit write operations by file/model, revision, target and duration; prohibit arbitrary evaluation/credential access. Reject stale snapshots and require independent post-change checks.
+
+**Adversarial acceptance cases:** two agents modifying the same wall from stale snapshots; nonexistent wall/window IDs; a window wider than its host wall; unresolved mm-versus-metres; duplicate identifiers; phantom levels; disconnected geometry; failed partial native transaction; simulated client interruption. All should preserve the last approved state, with evidence of rejection. These checks are required before expanding the write-capable MCP set.
+
+Sources: [Autodesk Revit `Transaction`](https://help.autodesk.com/cloudhelp/2026/ENU/Revit-API-MainReference/files/html/308ebf8d-d96d-4643-cd1d-34fffcea53fd.htm), [`TransactionGroup`](https://help.autodesk.com/cloudhelp/2026/ENU/Revit-API-MainReference/files/html/f1113d30-4c36-7844-1537-aad7f095cea0.htm), [Revit Automation failure handling](https://aps.autodesk.com/en/docs/design-automation/v3/developers_guide/revit_specific/), [AWS agent deterministic state guidance](https://docs.aws.amazon.com/prescriptive-guidance/latest/agentic-ai-security/best-practices-system-design.html), [OpenAI agent guardrails and structured outputs](https://developers.openai.com/tracks/building-agents).
+
+### P1 — AutoCAD compatibility is an independent evidence gate
+
+Existing code produces R2018 DXF files with model-space geometry, paper-space sheets, dimensions, layers and schedule/readback checks. It has **not** been proven production-ready by a native AutoCAD round trip. Even `ezdxf` documents that it is neither an architectural CAD kernel nor a DWG converter; some XREF cases require DWG conversion for AutoCAD use. **Do not claim that library audit success means native AutoCAD compatibility.**
+
+Implement [#16](https://github.com/MakeItEzzz555/Gridline/issues/16) as a compatibility matrix with captured app/version/OS/license and these verifications on *copies*:
+
+- Open in actual AutoCAD with errors and warnings logged; run native `AUDIT` and inspect whether anything was repaired or lost.
+- Confirm standard layers, ByLayer properties, dimensions, text fonts and heights, snapping, units and insertion scale, blocks/attributes and roundtrip editability.
+- Verify named paper-space layouts, locked viewport scale, proper plot area, PDF plot and measurements at known 1:50 and 1:100 scales. Autodesk reports model objects missing from layout/plot when viewports are misconfigured.
+- Save as DWG, reopen, modify a sample opening, then (when supported) resave/re-import DXF; measure differences in geometry, schedules, annotation, xrefs, block attributes, quantities, and entity identity. A working file in another viewer is not evidence AutoCAD passed.
+- For licensed host automation, explore Autodesk's supported AutoCAD Core Console without presuming it is installed on developer machines or available via generic cloud MCP.
+- Use outcome labels: `DXF_GENERATED`, `EZDXF_AUDITED`, `AUTOCAD_OPENED`, `AUTOCAD_AUDITED`, `AUTOCAD_EDITED_AND_PLOTTED`, `DWG_DXF_ROUNDTRIP_VERIFIED`, with `NOT_TESTED` where evidence is unavailable. Fail CI only for gates the run actually attempted; never label unavailable checks `PASS`.
+
+Vendor/library sources: [Autodesk DXF import/export](https://help.autodesk.com/cloudhelp/2026/ENU/AutoCAD-LT/files/GUID-11AEFE3C-D05A-45C3-8604-7B6A594440F3.htm), [Autodesk AUDIT/RECOVER](https://help.autodesk.com/view/ACADWEB/ENU/?caas=caas%2Fsfdcarticles%2Fsfdcarticles%2FOptimizing-the-AutoCAD-drawing-file-Purge-Audit-Recover.html), [Autodesk viewport failures](https://www.autodesk.com/support/technical/article/caas/sfdcarticles/sfdcarticles/Objects-drawn-in-model-space-are-not-visible-or-are-only-partially-visible-in-layout-in-AutoCAD-products.html), [Autodesk Core Console](https://www.autodesk.com/support/technical/article/caas/sfdcarticles/sfdcarticles/How-to-use-the-AutoCAD-Core-Console.html), [ezdxf limitations](https://ezdxf.readthedocs.io/en/stable/introduction.html), [ezdxf XREF interoperability](https://ezdxf.readthedocs.io/en/stable/xref.html).
+
+**Status:** Both items are researched/spec'd but remain unimplemented; no native AutoCAD session or write-capable agent transaction test has been performed in this research update.
+
 ## Execution phases and acceptance gates
 
 ### Phase 1 — Read-only revision dependency/coordination index (started)
