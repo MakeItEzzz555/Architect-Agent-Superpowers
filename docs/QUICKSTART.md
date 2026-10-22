@@ -12,15 +12,15 @@ You do not need to know prompt engineering.
 ## Terminal
 macOS/Linux:
 ```bash
-git clone https://github.com/MakeItEzzz555/Architect-Agent-Superpowers.git
-cd Architect-Agent-Superpowers
+git clone https://github.com/MakeItEzzz555/Gridline.git
+cd Gridline
 bash scripts/install-global.sh auto
 ```
 
 Windows:
 ```powershell
-git clone https://github.com/MakeItEzzz555/Architect-Agent-Superpowers.git
-cd Architect-Agent-Superpowers
+git clone https://github.com/MakeItEzzz555/Gridline.git
+cd Gridline
 powershell -ExecutionPolicy Bypass -File .\scripts\install-global.ps1 auto
 ```
 
@@ -40,6 +40,6 @@ Then ask naturally:
 ## Native Codex plugin
 
 ```bash
-codex plugin marketplace add MakeItEzzz555/Architect-Agent-Superpowers
-codex plugin add architect-agent-superpowers@architect-agent-superpowers
+codex plugin marketplace add MakeItEzzz555/Gridline
+codex plugin add gridline@gridline
 ```
