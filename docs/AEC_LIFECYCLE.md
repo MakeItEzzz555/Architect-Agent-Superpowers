@@ -1,6 +1,6 @@
 # AEC Lifecycle Coverage
 
-Architect Agent Superpowers uses project lifecycle frameworks as **coverage maps**, not universal contracts.
+Gridline uses project lifecycle frameworks as **coverage maps**, not universal contracts.
 
 ## Coverage map
 
