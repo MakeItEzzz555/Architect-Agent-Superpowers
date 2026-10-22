@@ -1,0 +1,187 @@
+{
+  "name": "US National CAD Standard (AIA CAD Layer Guidelines), metric",
+  "notes": [
+    "Layer names use the NCS format: discipline designator - major group - minor group.",
+    "Metric units and ISO paper sizes are used so drawings stay in millimetres; imperial units are not supported by this pipeline.",
+    "Practices should override 'layers' in an office profile ('extends': 'ncs')."
+  ],
+  "sheet_number_pattern": "^[A-Z]{1,2}-?\\d{3}$",
+  "units": "mm",
+  "scales": [
+    1,
+    2,
+    5,
+    10,
+    20,
+    25,
+    50,
+    100,
+    200,
+    250,
+    500,
+    1000,
+    1250,
+    2500
+  ],
+  "paper": {
+    "A0": [
+      1189,
+      841
+    ],
+    "A1": [
+      841,
+      594
+    ],
+    "A2": [
+      594,
+      420
+    ],
+    "A3": [
+      420,
+      297
+    ],
+    "A4": [
+      297,
+      210
+    ]
+  },
+  "sheet_margins_mm": {
+    "left": 20,
+    "right": 10,
+    "top": 10,
+    "bottom": 10
+  },
+  "min_text_mm": 2.5,
+  "text_mm": {
+    "note": 2.5,
+    "tag": 2.5,
+    "room_area": 2.5,
+    "dimension": 2.5,
+    "room_name": 3.5,
+    "grid": 5.0,
+    "title": 5.0,
+    "stamp": 5.0,
+    "sheet_title": 7.0
+  },
+  "statuses": [
+    "CONCEPT",
+    "PRELIMINARY",
+    "FOR INFORMATION",
+    "FOR COMMENT",
+    "FOR PLANNING",
+    "FOR TENDER",
+    "FOR CONSTRUCTION",
+    "AS BUILT"
+  ],
+  "issued_statuses": [
+    "FOR CONSTRUCTION",
+    "AS BUILT"
+  ],
+  "layers": {
+    "wall_external": {
+      "name": "A-WALL-EXTR",
+      "color": 7,
+      "lineweight": 50,
+      "linetype": "CONTINUOUS",
+      "plot": true
+    },
+    "wall_internal": {
+      "name": "A-WALL-INTR",
+      "color": 7,
+      "lineweight": 35,
+      "linetype": "CONTINUOUS",
+      "plot": true
+    },
+    "wall_poche": {
+      "name": "A-WALL-PATT",
+      "color": 7,
+      "lineweight": 13,
+      "linetype": "CONTINUOUS",
+      "plot": true
+    },
+    "opening": {
+      "name": "A-DOOR",
+      "color": 7,
+      "lineweight": 25,
+      "linetype": "CONTINUOUS",
+      "plot": true
+    },
+    "opening_tag": {
+      "name": "A-DOOR-IDEN",
+      "color": 7,
+      "lineweight": 25,
+      "linetype": "CONTINUOUS",
+      "plot": true
+    },
+    "grid": {
+      "name": "S-GRID",
+      "color": 8,
+      "lineweight": 18,
+      "linetype": "CENTER",
+      "plot": true
+    },
+    "grid_tag": {
+      "name": "S-GRID-IDEN",
+      "color": 7,
+      "lineweight": 25,
+      "linetype": "CONTINUOUS",
+      "plot": true
+    },
+    "room_boundary": {
+      "name": "A-AREA-OTLN",
+      "color": 4,
+      "lineweight": 13,
+      "linetype": "CONTINUOUS",
+      "plot": false
+    },
+    "room_tag": {
+      "name": "A-AREA-IDEN",
+      "color": 7,
+      "lineweight": 25,
+      "linetype": "CONTINUOUS",
+      "plot": true
+    },
+    "dimension": {
+      "name": "A-ANNO-DIMS",
+      "color": 7,
+      "lineweight": 18,
+      "linetype": "CONTINUOUS",
+      "plot": true
+    },
+    "annotation": {
+      "name": "A-ANNO-SYMB",
+      "color": 7,
+      "lineweight": 25,
+      "linetype": "CONTINUOUS",
+      "plot": true
+    },
+    "titleblock": {
+      "name": "A-ANNO-TTLB",
+      "color": 7,
+      "lineweight": 35,
+      "linetype": "CONTINUOUS",
+      "plot": true
+    },
+    "sheet_frame": {
+      "name": "A-ANNO-TTLB-BRDR",
+      "color": 7,
+      "lineweight": 70,
+      "linetype": "CONTINUOUS",
+      "plot": true
+    },
+    "stamp": {
+      "name": "A-ANNO-TTLB-STMP",
+      "color": 1,
+      "lineweight": 50,
+      "linetype": "CONTINUOUS",
+      "plot": true
+    },
+    "viewport": {
+      "name": "A-ANNO-NPLT",
+      "color": 6,
+      "lineweight": 13,
+      "linetype": "CONTINUOUS",
+      "plot": false
+    }
+  }
+}

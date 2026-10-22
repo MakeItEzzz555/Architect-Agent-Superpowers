@@ -11,7 +11,7 @@
 ![AEC](https://img.shields.io/badge/AEC-architecture%20%2B%20BIM%20%2B%20civil-475569)
 [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-**[Copy the install prompt](#install-with-your-ai-agent-copy-once)** · **[Skills](#the-30-superpowers)** · **[Drawings](#conceptual-vector-drawings)** · **[Tools](#cad--bim--aec-tools)** · **[Research](docs/RESEARCH.md)**
+**[Copy the install prompt](#install-with-your-ai-agent-copy-once)** · **[Skills](#the-30-superpowers)** · **[Drawings](#coordinated-cad-drawings)** · **[Tools](#cad--bim--aec-tools)** · **[Research](docs/RESEARCH.md)**
 
 </div>
 
@@ -139,9 +139,20 @@ Windows users can run `powershell -ExecutionPolicy Bypass -File .\scripts\instal
 | `architecture-red-team` | Independent final challenge before consequential issue/submission |
 
 [Full lifecycle map](docs/AEC_LIFECYCLE.md).
-## Conceptual vector drawings
+## Coordinated CAD drawings
 
-When a trusted native CAD/BIM host is available, the skills prefer the native editable model. When it is not, the drawing skill ships a small dependency-free engine that turns an explicit JSON spec into SVG or DXF. It draws six primitives (lines, rectangles, circles, polylines, text and dimensions), enough for **conceptual** plan and section diagrams. It does not model walls, doors, hatching, title blocks or scale bars:
+When a trusted native CAD/BIM host is available, the skills prefer the native editable model. When it is not, the drawing skill builds a **coordinated drawing set from one building spec**: standard-layered DXF sheets (ISO 13567, US NCS or your office profile) that open in AutoCAD, vector PDFs, and room/door/window schedules and a sheet register. A checker then verifies the files against the standard and against each other before anything is presented.
+
+```bash
+pip install ezdxf matplotlib
+D=skills/architectural-drawing-generation
+python3 $D/scripts/aec_cad.py build $D/references/example-house.building.json /tmp/example-house
+python3 $D/scripts/aec_cad.py check $D/references/example-house.building.json /tmp/example-house
+```
+
+![Example sheet A-101: ground floor plan at 1:100 on A3, built and checked from the example spec](examples/example-house-A-101.png)
+
+It draws plans today (walls, doors, windows, rooms, grids, dimensions, sheets); sections, elevations and details are next. For quick diagrams there is also a small dependency-free engine that turns an explicit JSON spec into SVG or DXF. It draws six primitives (lines, rectangles, circles, polylines, text and dimensions), enough for **conceptual** plan and section diagrams. It does not model walls, doors, hatching, title blocks or scale bars:
 
 ```bash
 python3 skills/architectural-drawing-generation/scripts/aec_draw.py skills/architectural-drawing-generation/references/concept-plan.drawing.json /tmp/plan.svg

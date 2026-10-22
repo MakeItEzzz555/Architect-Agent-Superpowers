@@ -5,44 +5,52 @@ description: Create and coordinate architectural drawings and vector deliverable
 
 # Architectural Drawing Generation
 
-Choose the most faithful available authoring path: native CAD/BIM tool first; otherwise produce explicit, reviewable vector geometry with units, scale metadata and assumptions.
+Produce drawings an architect could put in front of a client or consultant: one source of truth, office-standard layers, correct scale and sheet, and a passing check before anything is presented. Apply every default below without being asked.
 
-## Preflight
+## Choose the path
 
-- Drawing type, purpose/status, scale, sheet size, units, datum/north, source geometry and required annotations.
-- Authoritative dimensions, levels, grids, room IDs, material/assembly information and coordinate origin.
+1. **Native host connected** (AutoCAD, Revit, Archicad, Rhino through a trusted MCP or add-in): inspect the open document and version first. For AutoCAD, prefer generating the DXF with the pipeline below and opening or inserting it (`OPEN`, `INSERT`, `XREF`) over drawing entity by entity through the bridge: the file is reviewable, checkable and undoable as one step.
+2. **No host**: use the bundled coordinated pipeline, `scripts/aec_cad.py` (needs `pip install ezdxf matplotlib`).
+3. **Diagram only, or ezdxf unavailable**: `scripts/aec_draw.py` renders simple SVG/DXF from six primitives. Say it is a diagram, not a drawing set.
 
-Keep verified facts, project assumptions, design options, and unresolved questions visibly separate. If a required input is absent, record it as `UNKNOWN` rather than inventing it.
+Paths are relative to this SKILL.md's directory.
 
-## Workflow
+## Coordinated pipeline (`scripts/aec_cad.py`)
 
-1. Define drawing extents, hierarchy, layers/categories, lineweight intent, annotation convention and reference data.
-2. Generate geometry from authoritative coordinates/dimensions. When no native CAD/BIM host exists, use the conceptual SVG/DXF fallback bundled with this skill (paths are relative to this SKILL.md's directory):
-   - `scripts/aec_draw.py SPEC.json OUT.svg|OUT.dxf` renders; add `--validate-only` to check a spec without writing.
-   - `references/aec-drawing.schema.json` defines the spec; `references/concept-plan.drawing.json` is a working example.
-   - It draws only `line`, `rect`, `circle`, `polyline`, `text` and `dimension` entities. Wall thickness, door swings, hatching, title blocks and scale bars must be built from those primitives or produced in a native host.
-3. Add dimensions, labels, levels, grids, section/elevation/detail references, legends and notes appropriate to the stage.
-4. Cross-reference related views and schedules; create proof output and visually inspect for clipping, scale, hierarchy and contradictions.
+Write one building spec, then derive everything from it. Never hand-edit an output; change the spec and rebuild.
 
-## Deliverables
+```bash
+python3 scripts/aec_cad.py build SPEC.json OUT/ [--standard iso13567|ncs|office.json]
+python3 scripts/aec_cad.py check SPEC.json OUT/ [--standard ...]
+```
 
-- Native CAD/BIM instructions or editable SVG/DXF
-- Drawing register metadata
-- Assumption/source notes
-- Proof/check report
+- Spec format: `references/example-house.building.json` (levels, grids, walls with thickness, openings hosted on walls by offset, rooms as inside-face polygons, sheets, project/title data). All units are millimetres.
+- `build` writes, per sheet, a DXF with the plan in model space at 1:1 and a paper-space layout (frame with ISO 5457 margins, a title block within ISO 7200's 180 mm width with attributes, status stamp, scale bar, north arrow, a locked viewport at the sheet scale), a vector PDF, and `room-schedule.csv`, `door-schedule.csv`, `window-schedule.csv`, `sheet-register.csv`.
+- `check` reads the files back and fails on: spec errors, DXF audit errors, entities on non-standard layers or with colour/lineweight overrides, text that plots below the minimum height, empty title fields, a missing stamp, no locked viewport at scale, opening tags or room areas that disagree with the spec, schedules or register that disagree with the geometry. It writes `check-report.json`.
+- **Run `check` and get PASS before presenting a drawing.** Report any warnings (for example "not checked by anyone yet") to the user.
 
-## Verification
+## Standards
 
-- Geometry extents, units, dimensions, view references and labels reconcile to source data.
-- A generated vector drawing is explicitly labelled conceptual/non-issued unless independently verified for its intended use.
+- These profiles follow the published structure of each standard as far as public sources allow; they are not certified implementations. Say "layered to the ISO 13567 profile", never "ISO 13567 compliant", unless the office has checked the profile against the standard text.
+- Default to the project's office standard. Without one, use `iso13567` in Europe and most of the world and `ncs` in the US, and tell the user which you used.
+- Profiles live in `references/standards/`. An office profile is a JSON file with `"extends": "iso13567"` (or `"ncs"`) that overrides only what differs, such as layer names, text sizes or statuses. Read the profile's `notes` before relying on its layer codes.
 
-For file/model changes, compare the result against a pre-change baseline and report changed items, skipped items, failures, and checks actually run.
+## Drafting defaults (always)
 
-## Professional boundaries
+- **Source of truth:** every dimension comes from the brief, survey or model. A missing value is `UNKNOWN` and a question for the user; never a guess. Units, datum and north are stated.
+- **Line hierarchy (weights from the ISO 128 series):** cut walls are heaviest (0.50 external, 0.35 internal) with solid poché; openings 0.25; dimensions and grids 0.18; the sheet frame 0.70. Everything is ByLayer.
+- **Text (heights from the ISO 3098 series):** nothing plots below 2.5 mm, the profile minimum (ISO 3098 also allows 1.8 mm; offices can change it). Notes and tags 2.5, room names 3.5, grid bubbles and titles 5, sheet titles 7. Model-space text height = plotted height × scale.
+- **Plans:** doors show leaf and swing, windows show frame and glass, every opening is tagged and appears in its schedule, every room shows name and area. Exterior dimensions run as two chains (openings, then overall) outside the building, with text reading from the bottom or right. Grid lines run past the dimensions with bubbles at both ends.
+- **Sheets:** standard scales only (1:20, 1:50, 1:100, 1:200…), standard paper sizes, sheet numbers to the office pattern (`A-101`), the title block fully filled, a scale bar and north arrow. If the plan does not fit, change the scale or the sheet, never the drawing.
+- **Status:** anything not formally issued carries a `NOT FOR CONSTRUCTION` stamp. `FOR CONSTRUCTION` and `AS BUILT` require a named checker, and the pipeline refuses them without one.
+- **Review the output visually** (render the PDF to an image) for collisions between text, tags, dimensions and grids before presenting it; the checker cannot see overlaps.
 
-- Never invent dimensions needed to build the project.
-- Do not claim a generated drawing is permit/issue-for-construction ready without qualified review.
+## Scope today
 
-If a live CAD/BIM/GIS/analysis tool or MCP integration is available, inspect the current document/model and tool version before write operations. Prefer read-only inspection, dry runs, bounded samples, new output paths, and native undo/transaction mechanisms. Never claim a model or drawing was changed unless the tool confirms it.
+The pipeline draws plans: walls, doors, windows, rooms, grids, dimensions, sheets and schedules. Sections, elevations, details, stairs, furniture, ceilings and site plans are not generated yet. Produce those in a native host, or describe exactly what is needed, rather than faking them with primitives.
 
-If the native application is unavailable, produce a reproducible plan, script, structured data, SVG/DXF artifact, or exact in-application procedure instead of pretending to have operated the software.
+## Verification and boundaries
+
+- Report the files produced, the standard used, the `check` result and the warnings, and every assumption you made.
+- A generated drawing is a drafted proposal. It needs review by a qualified architect before it is issued, permitted or built from.
+- For file or model changes in a native host, compare the result against a pre-change baseline and report changed, skipped and failed items. Never claim the host changed something unless it confirms it.
