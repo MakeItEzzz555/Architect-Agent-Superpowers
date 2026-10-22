@@ -572,8 +572,19 @@ def check(spec_path: Path, out: Path, standard: str | None) -> int:
             for a in blocks[0].attribs:
                 if a.dxf.height < minimum:
                     errors.append(f"{number}: title block {a.dxf.tag} text below {profile['min_text_mm']} mm")
-            if values.get("NUMBER") != number or values.get("SCALE") != f"1:{scale}":
-                errors.append(f"{number}: title block number/scale do not match the sheet")
+            expected_title = {
+                "PROJECT": project["name"], "CLIENT": project.get("client", ""),
+                "ADDRESS": project.get("address", ""), "TITLE": sheet["title"],
+                "NUMBER": number, "REVISION": project["revision"],
+                "SCALE": f"1:{scale}", "SIZE": sheet["size"],
+                "STATUS": project["status"], "DATE": project["date"],
+                "DRAWN": project["drawn_by"],
+                "CHECKED": project.get("checked_by", ""),
+                "ARCHITECT": project["architect"],
+            }
+            for field, expected in expected_title.items():
+                if values.get(field) != str(expected):
+                    errors.append(f"{number}: title block {field} differs from authoritative spec")
         stamps = [e.dxf.text for e in psp.query("TEXT") if e.dxf.layer == L["stamp"]]
         if not any(project["status"] in s for s in stamps):
             errors.append(f"{number}: status stamp missing")
@@ -602,21 +613,54 @@ def check(spec_path: Path, out: Path, standard: str | None) -> int:
         print("\n".join(f"ERROR: {e}" for e in errors))
         print(f"FAIL: {len(errors)} spec errors; files not checked")
         return 1
-    schedules = {
-        "room-schedule.csv": {r["id"]: f"{area_m2(r['boundary']):.2f}" for r in spec.get("rooms", [])},
-        "door-schedule.csv": {o["id"]: str(o["width"]) for o in spec["openings"] if o["kind"] == "door"},
-        "window-schedule.csv": {o["id"]: str(o["width"]) for o in spec["openings"] if o["kind"] == "window"},
+    # Independent, field-complete schedule readback catches stale type, height,
+    # sill, wall or level after a client-driven opening change. Width alone is
+    # not enough for cross-sheet coordination.
+    levels_by_id = {lv["id"]: lv for lv in spec["levels"]}
+    walls_by_id = {wall["id"]: wall for wall in spec["walls"]}
+    expected_schedules = {
+        "room-schedule.csv": {
+            room["id"]: {
+                "id": room["id"], "name": room["name"],
+                "level": levels_by_id[room["level"]]["name"],
+                "area_m2": f"{area_m2(room['boundary']):.2f}",
+                "perimeter_m": f"{sum(math.dist(a, b) for a, b in zip(room['boundary'], room['boundary'][1:] + room['boundary'][:1])) / 1000:.2f}",
+            }
+            for room in spec.get("rooms", [])
+        }
     }
-    for name, want in schedules.items():
+    for kind in ("door", "window"):
+        expected = {}
+        for opening in spec["openings"]:
+            if opening["kind"] != kind:
+                continue
+            row = {
+                "id": opening["id"], "type": opening.get("type", ""),
+                "level": str(walls_by_id[opening["wall"]]["level"]),
+                "wall": opening["wall"], "width_mm": str(opening["width"]),
+                "height_mm": str(opening["height"]),
+            }
+            row["sill_mm" if kind == "window" else "hinge"] = str(
+                opening.get("sill", "") if kind == "window" else opening.get("hinge", "")
+            )
+            expected[opening["id"]] = row
+        expected_schedules[f"{kind}-schedule.csv"] = expected
+
+    for name, want in expected_schedules.items():
         path = out / name
         if not path.exists():
             errors.append(f"{name} is missing")
             continue
-        column = "area_m2" if name.startswith("room") else "width_mm"
-        got = {row["id"]: row[column] for row in read_csv(path)}
-        if got != want:
-            diff = sorted(k for k in set(want) | set(got) if want.get(k) != got.get(k))
-            errors.append(f"{name} does not match the spec geometry for {diff}")
+        rows = read_csv(path)
+        got = {row.get("id"): row for row in rows}
+        if len(got) != len(rows) or any(not row.get("id") for row in rows):
+            errors.append(f"{name} contains duplicate or missing IDs")
+        diff = sorted(
+            key for key in set(want) | set(got)
+            if got.get(key) != want.get(key)
+        )
+        if diff:
+            errors.append(f"{name} does not match spec fields for {diff}")
         checked.append(name)
     register = out / "sheet-register.csv"
     if register.exists():

@@ -139,6 +139,18 @@ Windows users can run `powershell -ExecutionPolicy Bypass -File .\scripts\instal
 | `architecture-red-team` | Independent final challenge before consequential issue/submission |
 
 [Full lifecycle map](docs/AEC_LIFECYCLE.md).
+## Revision impact and cross-sheet QA (read-only pilot)
+
+When a window, wall, room, level or drawing revision changes, Gridline can now identify **affected indexed sheets and schedules** to review before issue. This covers references declared in the building specification; it **does not pretend to inspect unrelated PDFs or 40 unknown external drawings**.
+
+```bash
+python3 skills/architectural-drawing-generation/scripts/revision_impact.py before.building.json after.building.json --out impact.json
+```
+
+There is also an opt-in local, read-only Gridline MCP server exposing this comparison to MCP-compatible agents (requires the official Python MCP SDK v2 and an explicitly permitted project directory). **It is not a connection to AutoCAD or Revit.**
+
+[Next phases: IFC/IDS validation, official Autodesk MCP, Rhino, Blender, Archicad, editable 3D and scanned drawing research](docs/NEXT_AEC_PHASES.md).
+
 ## Coordinated CAD drawings
 
 When a trusted native CAD/BIM host is available, the skills prefer the native editable model. When it is not, the drawing skill builds a **coordinated drawing set from one building spec**: standard-layered DXF sheets (ISO 13567, US NCS or your office profile) that open in AutoCAD, vector PDFs, and room/door/window schedules and a sheet register. A checker then verifies the files against the standard and against each other before anything is presented.

@@ -54,3 +54,21 @@ The pipeline draws plans: walls, doors, windows, rooms, grids, dimensions, sheet
 - Report the files produced, the standard used, the `check` result and the warnings, and every assumption you made.
 - A generated drawing is a drafted proposal. It needs review by a qualified architect before it is issued, permitted or built from.
 - For file or model changes in a native host, compare the result against a pre-change baseline and report changed, skipped and failed items. Never claim the host changed something unless it confirms it.
+
+
+## Read-only client revision impact (pilot)
+
+For changes to window schedules, wall positions, room data, or sheet revisions,
+compare explicit before/after project JSONs using:
+`python3 scripts/revision_impact.py before.building.json after.building.json --out impact.json`
+
+The report enumerates changed IDs, schedules and **indexed** drawings requiring review.
+Sections, elevations, unindexed PDFs and hand markups remain UNKNOWN unless
+explicitly linked using each sheet's `references` mapping (openings/walls/rooms/levels).
+Do not claim a visual/DWG/BIM content comparison from this result alone.
+
+For MCP-compatible agents, an optional local read-only stdio server lives at
+`scripts/gridline_mcp.py`. It requires the official Python MCP SDK v2 and an
+explicit `GRIDLINE_MCP_PROJECT_ROOT` directory. It exposes only revision-impact
+comparison and capabilities; it does not modify drawings or connect to Autodesk.
+See repository `docs/NEXT_AEC_PHASES.md` for host/vendor adapter gates.

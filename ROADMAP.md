@@ -6,6 +6,18 @@ The project evolves incrementally around usefulness, portability, safety, and me
 
 First users: small practices and independent architects, Cyprus and the wider EU first, with standards that stay configurable for anywhere. The principle: **one source of truth, deliverables derived from it, a checker before anything is presented, and a named architect who signs.**
 
+## Community-driven priority update (2026-10-22)
+
+See [next AEC phases and official integration research](docs/NEXT_AEC_PHASES.md).
+
+1. **Cross-sheet dependency/impact review (Phase 1):** in progress. Read-only spec revision impact with explicit partial coverage; stronger schedule and title-block checks; opt-in Gridline local read-only MCP server. Next: actual drawing/PDF cross-reference extraction and real 40-sheet case fixtures.
+2. **IFC 4.3 / IFC4 / IFC2X3 schema and IDS gate (Phase 2):** local IfcOpenShell, IfcTester and buildingSMART-style validation; fail-closed release controls, geometry and project standards tested separately.
+3. **Native AEC MCP integrations (Phase 3):** official Autodesk Revit 2027.2 local MCP (read first); Autodesk Assistant's AutoCAD/Civil3D preview (respect actual host/client restrictions); Rhino.Compute, Graphisoft JSON API, Blender bpy and FreeCAD local APIs through bounded adapters.
+4. **Editable 2D → coherent 3D → IFC (Phase 4):** source-of-truth dimensions, topology checks, native geometry, GUID tracking, roundtrip verification; render/mesh preview is not certified BIM.
+5. **Scanned annotated floor plans (Phase 5):** calibration, confidence, annotation/OCR separation, human review, adversarial tests. No one-shot scan-to-BIM claims.
+
+Other P1 agent routing/reviewer evaluations and standards-profile improvements remain planned; they are not replaced by visual demos.
+
 ## Next, in order
 1. **Agent reliability (P1).** Read-only reviewer agents; baseline activation and negative-trigger evals on the existing cases; more negative cases.
 2. **Audit existing drawings.** Run the standards checks (layers, ByLayer properties, text heights, title blocks, sheet register) on a practice's *own* DXF files, not only generated ones. Most offices already have drawings; checking them is immediate value.
