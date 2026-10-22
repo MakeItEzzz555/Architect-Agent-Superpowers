@@ -8,7 +8,9 @@ $Root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 # The PID keeps two runs in the same second from sharing a backup folder.
 $Stamp = "$(Get-Date -Format "yyyyMMdd-HHmmss")-$PID"
 # Lists every skill/agent path this pack installed into a host home; only these are replaced without -Force.
-$LedgerName = ".architect-agent-superpowers.installed"
+$LedgerName = ".gridline.installed"
+# Recognize ownership records from the previous installer identity.
+$LegacyLedgerName = ".architect-agent-superpowers.installed"
 $Skills = Get-ChildItem -Path (Join-Path $Root "skills") -Directory |
   Where-Object { Test-Path (Join-Path $_.FullName "SKILL.md") } |
   Sort-Object Name |
@@ -35,8 +37,12 @@ function Get-Entries([string]$HostName) {
 }
 
 function Get-Ledger([string]$HomeDir) {
-  $Path = Join-Path $HomeDir $LedgerName
-  if (Test-Path $Path) { @(Get-Content $Path) } else { @() }
+  $OwnedPaths = @()
+  foreach ($LedgerFile in @($LedgerName, $LegacyLedgerName)) {
+    $Path = Join-Path $HomeDir $LedgerFile
+    if (Test-Path $Path) { $OwnedPaths += @(Get-Content $Path) }
+  }
+  @($OwnedPaths | Sort-Object -Unique)
 }
 
 # Paths that exist but were not installed by this pack.
@@ -56,7 +62,7 @@ function Stop-Install([string]$HostName,[string]$Why,[string]$HomeDir) {
 # Each item is either its previous version or the new one, never missing: a failed step is undone before stopping.
 function Install-HostItems([string]$HostName) {
   $HomeDir = Get-HostHome $HostName
-  $Backup = Join-Path $HomeDir "backups\architect-agent-superpowers-$Stamp"
+  $Backup = Join-Path $HomeDir "backups\gridline-$Stamp"
   $LedgerPath = Join-Path $HomeDir $LedgerName
   $Count = 0; $Backed = 0
   foreach ($E in @(Get-Entries $HostName)) {
