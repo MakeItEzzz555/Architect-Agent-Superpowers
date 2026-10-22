@@ -38,8 +38,8 @@ if not mp_plugins or mp_plugins[0].get("version") not in versions:
 
 market = load_json(ROOT / ".agents" / "plugins" / "marketplace.json")
 entries = market.get("plugins", [])
-if market.get("name") != "architect-agent-superpowers" or len(entries) != 1:
-    errors.append("Codex marketplace: expected one architect-agent-superpowers entry")
+if market.get("name") != "gridline" or len(entries) != 1:
+    errors.append("Codex marketplace: expected one gridline entry")
 elif entries[0].get("source") != {"source": "local", "path": "./"}:
     errors.append("Codex marketplace: root local source mapping is invalid")
 
