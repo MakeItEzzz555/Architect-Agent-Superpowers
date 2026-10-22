@@ -1,11 +1,11 @@
 {
-  "name": "architect-agent-superpowers",
+  "name": "gridline",
   "interface": {
-    "displayName": "Architect Agent Superpowers"
+    "displayName": "Gridline"
   },
   "plugins": [
     {
-      "name": "architect-agent-superpowers",
+      "name": "gridline",
       "source": {
         "source": "local",
         "path": "./"

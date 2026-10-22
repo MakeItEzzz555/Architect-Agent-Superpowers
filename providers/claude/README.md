@@ -7,8 +7,8 @@ It contains synchronized copies of the canonical `skills/` plus Claude-native su
 Install from the repository:
 
 ```bash
-claude plugin marketplace add MakeItEzzz555/Architect-Agent-Superpowers
-claude plugin install architect-agent-superpowers@architect-agent-superpowers
+claude plugin marketplace add MakeItEzzz555/Gridline
+claude plugin install gridline@gridline
 ```
 
 For direct user-scope installation instead, run the repository's global installer with `claude`.

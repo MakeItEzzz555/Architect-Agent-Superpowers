@@ -1,14 +1,14 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
-  "name": "architect-agent-superpowers",
-  "version": "0.6.0",
+  "name": "gridline",
+  "version": "0.7.0",
   "description": "Portable architecture/AEC agent skills for design analysis, planning research, CAD/BIM workflows, drawing QA, quantities, presentations, and red-team review.",
   "author": {
     "name": "Nicolas Savvides",
     "url": "https://github.com/MakeItEzzz555"
   },
-  "homepage": "https://github.com/MakeItEzzz555/Architect-Agent-Superpowers",
-  "repository": "https://github.com/MakeItEzzz555/Architect-Agent-Superpowers",
+  "homepage": "https://github.com/MakeItEzzz555/Gridline",
+  "repository": "https://github.com/MakeItEzzz555/Gridline",
   "license": "MIT",
   "keywords": [
     "architecture",

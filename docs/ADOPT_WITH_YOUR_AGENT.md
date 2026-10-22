@@ -3,7 +3,7 @@
 Paste this into a filesystem-capable AI coding agent while it is opened in this extracted/cloned repository:
 
 ```text
-Install Architect Agent Superpowers globally for my current user.
+Install Gridline globally for my current user.
 
 Read this repository's README and installer scripts first. Detect which supported runtimes are already installed on this machine: Codex, Claude Code, and Gemini CLI. Install only the matching architecture skills/agents using this repository's supported user-scoped paths or native plugin/extension mechanisms.
 

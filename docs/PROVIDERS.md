@@ -2,15 +2,15 @@
 
 ## Universal Agent Skills
 
-For compatible hosts, use `npx skills@latest add MakeItEzzz555/Architect-Agent-Superpowers --all -g`. Native provider packaging remains available below.
+For compatible hosts, use `npx skills@latest add MakeItEzzz555/Gridline --all -g`. Native provider packaging remains available below.
 
 ## OpenAI Codex
 
 Native plugin install:
 
 ```bash
-codex plugin marketplace add MakeItEzzz555/Architect-Agent-Superpowers
-codex plugin add architect-agent-superpowers@architect-agent-superpowers
+codex plugin marketplace add MakeItEzzz555/Gridline
+codex plugin add gridline@gridline
 ```
 
 The direct installer copies canonical skills into the current user's Codex skill directory. It deliberately does not add permanent routing prose to global AGENTS.md; skill metadata is sufficient for discovery and avoids extra always-on context.

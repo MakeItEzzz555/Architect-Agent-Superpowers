@@ -1,14 +1,14 @@
 {
-  "name": "architect-agent-superpowers",
-  "displayName": "Architect Agent Superpowers",
-  "version": "0.6.0",
+  "name": "gridline",
+  "displayName": "Gridline",
+  "version": "0.7.0",
   "description": "Architecture/AEC skills and specialist subagents for Claude Code.",
   "author": {
     "name": "Nicolas Savvides",
     "url": "https://github.com/MakeItEzzz555"
   },
-  "homepage": "https://github.com/MakeItEzzz555/Architect-Agent-Superpowers",
-  "repository": "https://github.com/MakeItEzzz555/Architect-Agent-Superpowers",
+  "homepage": "https://github.com/MakeItEzzz555/Gridline",
+  "repository": "https://github.com/MakeItEzzz555/Gridline",
   "license": "MIT",
   "keywords": [
     "architecture",

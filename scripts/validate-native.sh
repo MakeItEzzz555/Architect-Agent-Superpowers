@@ -21,8 +21,8 @@ if command -v codex >/dev/null 2>&1; then
   trap 'rm -rf "$tmp"' EXIT
   mkdir -p "$tmp/codex"
   CODEX_HOME="$tmp/codex" codex plugin marketplace add "$ROOT" --json >/dev/null
-  CODEX_HOME="$tmp/codex" codex plugin add architect-agent-superpowers@architect-agent-superpowers --json >/dev/null
-  CODEX_HOME="$tmp/codex" codex plugin list | grep -q "architect-agent-superpowers@architect-agent-superpowers"
+  CODEX_HOME="$tmp/codex" codex plugin add gridline@gridline --json >/dev/null
+  CODEX_HOME="$tmp/codex" codex plugin list | grep -q "gridline@gridline"
   ran=1
 else
   echo "Codex: CLI not installed; native validation skipped"
