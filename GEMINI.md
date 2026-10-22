@@ -1,4 +1,4 @@
-# Architect Agent Superpowers
+# Gridline
 
 This extension provides architecture/AEC specialist skills and optional subagents.
 
