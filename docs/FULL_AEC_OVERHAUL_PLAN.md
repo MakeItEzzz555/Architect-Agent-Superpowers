@@ -1,7 +1,7 @@
 # Full AEC Superpowers Overhaul — Execution Plan
 
 ## Goal
-Turn Architect Agent Superpowers from a small architecture skill pack into a provider-neutral, progressively disclosed AEC workflow system that can assist across the complete building-project lifecycle, generate real vector drawing artifacts when no native CAD/BIM host is available, and route safely into specialist CAD/BIM/civil/coordination workflows.
+Turn Gridline from a small architecture skill pack into a provider-neutral, progressively disclosed AEC workflow system that can assist across the complete building-project lifecycle, generate real vector drawing artifacts when no native CAD/BIM host is available, and route safely into specialist CAD/BIM/civil/coordination workflows.
 
 ## Research basis
 - Benchmark onboarding and release discipline against TuckBit, Claude Widget Kit, and Codex Widget Kit.
