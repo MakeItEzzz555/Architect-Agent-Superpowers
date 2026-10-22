@@ -9,7 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 INSTALLER = ROOT / "scripts" / "install-global.sh"
 DRAWING = Path("architectural-drawing-generation")
-LEDGER = ".architect-agent-superpowers.installed"
+LEDGER = ".gridline.installed"
 
 
 def run_drawing_engine(skills_dir):
@@ -81,13 +81,28 @@ class InstallPathTests(unittest.TestCase):
         forced = self.install("claude", "--force")
         self.assertEqual(forced.returncode, 0, forced.stderr)
         self.assertNotEqual(foreign.read_text(), "someone else's skill\n")
-        backups = list((self.home / ".claude" / "backups").glob("architect-agent-superpowers-*/skills/drawing-qa"))
+        backups = list((self.home / ".claude" / "backups").glob("gridline-*/skills/drawing-qa"))
         self.assertEqual(len(backups), 1)
 
         # Restoring is moving the backup back.
         shutil.rmtree(foreign.parent)
         shutil.move(str(backups[0]), str(foreign.parent))
         self.assertEqual(foreign.read_text(), "someone else's skill\n")
+
+    def test_old_ownership_ledger_updates_without_force(self):
+        # A Gridline update recognizes only the explicitly recorded paths
+        # from the prior brand, leaving unrelated foreign items protected.
+        self.assertEqual(self.install("gemini").returncode, 0)
+        home = self.home / ".gemini"
+        legacy = home / ".architect-agent-superpowers.installed"
+        (home / LEDGER).rename(legacy)
+        installed = home / "skills" / "drawing-qa" / "SKILL.md"
+        installed.write_text("old installed version\\n")
+        upgraded = self.install("gemini")
+        self.assertEqual(upgraded.returncode, 0, upgraded.stderr)
+        self.assertEqual(installed.read_bytes(), (ROOT / "skills" / "drawing-qa" / "SKILL.md").read_bytes())
+        self.assertIn("skills/drawing-qa", (home / LEDGER).read_text())
+        self.assertTrue(legacy.is_file())
 
     def test_reinstall_updates_owned_items_without_force(self):
         self.assertEqual(self.install("gemini").returncode, 0)
