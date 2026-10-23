@@ -10,7 +10,7 @@ Produce drawings an architect could put in front of a client or consultant: one 
 ## Choose the path
 
 1. **Native host connected** (AutoCAD, Revit, Archicad, Rhino through a trusted MCP or add-in): inspect the open document and version first. For AutoCAD, prefer generating the DXF with the pipeline below and opening or inserting it (`OPEN`, `INSERT`, `XREF`) over drawing entity by entity through the bridge: the file is reviewable, checkable and undoable as one step.
-2. **No host**: use the bundled coordinated pipeline, `scripts/aec_cad.py` (needs `pip install ezdxf matplotlib`).
+2. **No host**: use the bundled coordinated pipeline, `scripts/aec_cad.py` (needs `pip install ezdxf==1.4.5 matplotlib==3.11.2 pypdf==6.21.2` for generation and verification).
 3. **Diagram only, or ezdxf unavailable**: `scripts/aec_draw.py` renders simple SVG/DXF from six primitives. Say it is a diagram, not a drawing set.
 
 Paths are relative to this SKILL.md's directory.
@@ -24,10 +24,12 @@ python3 scripts/aec_cad.py build SPEC.json OUT/ [--standard iso13567|ncs|office.
 python3 scripts/aec_cad.py check SPEC.json OUT/ [--standard ...]
 ```
 
-- Spec format: `references/example-house.building.json` (levels, grids, walls with thickness, openings hosted on walls by offset, rooms as inside-face polygons, sheets, project/title data). All units are millimetres.
+- Spec format: `references/building-spec.v1.schema.json` and `references/example-house.building.json` (levels, grids, walls with thickness, openings hosted on walls by offset, rooms as inside-face polygons, sheets, project/title data). Explicit `units: "mm"`, finite numeric geometry, named levels with elevation/positive height, and window sills are required. Openings must fit horizontally and vertically. Legacy specs may omit `schema_version`; new specs should set `"schema_version": "building-spec.v1"`.
 - `build` writes, per sheet, a DXF with the plan in model space at 1:1 and a paper-space layout (frame with ISO 5457 margins, a title block within ISO 7200's 180 mm width with attributes, status stamp, scale bar, north arrow, a locked viewport at the sheet scale), a vector PDF, and `room-schedule.csv`, `door-schedule.csv`, `window-schedule.csv`, `sheet-register.csv`.
-- `check` reads the files back and fails on: spec errors, DXF audit errors, entities on non-standard layers or with colour/lineweight overrides, text that plots below the minimum height, empty title fields, a missing stamp, no locked viewport at scale, opening tags or room areas that disagree with the spec, schedules or register that disagree with the geometry. It writes `check-report.json`.
-- **Run `check` and get PASS before presenting a drawing.** Report any warnings (for example "not checked by anyone yet") to the user.
+- `check` independently measures supported wall outlines, opening jamb/frame/leaf/swing primitives and room boundaries against the spec, including multiplicity. Missing, moved, resized, rotated or duplicated critical primitives fail even if tags/CSVs match. New geometry carries `GRIDLINE` XDATA; legacy geometry is matched by position and reported as inferred identity. Handles/XDATA do not prove native roundtrip identity.
+- PDF checks require pypdf: one page at the stated size, document identity where present, and independently measured straight plan segments at the intended plot mapping/scale. Missing PDFs or validators fail. Raster visibility, clipping, fonts, door-arc plotting, text collisions, grid/dimension/hatch geometry, topology, 3D and native hosts remain explicitly unverified.
+- Standards/title/tag/schedule checks still run, including the register date. `check-report.json` and append-only `receipts/<id>.json` bind exact consumed spec/profile/output bytes, validator file/dependency hashes/versions and source Git SHA (or `UNKNOWN` after standalone installation). Inspect `coverage` and `unverified_items`; a local PASS covers supported 2D checks only.
+- **Run `check` before presenting a drawing and report its scope and warnings.** Also visually review the PDF and obtain the appropriate professional review. Build each revision in a fresh output directory: atomic publication is a separate pending gate.
 
 ## Standards
 
@@ -38,6 +40,7 @@ python3 scripts/aec_cad.py check SPEC.json OUT/ [--standard ...]
 ## Drafting defaults (always)
 
 - **Source of truth:** every dimension comes from the brief, survey or model. A missing value is `UNKNOWN` and a question for the user; never a guess. Units, datum and north are stated.
+- **Detail completeness:** inventory every supplied requirement and every interpretable image, maquette or top-down drawing detail with source, element ID, dimensions, confidence, implementation and verification state. Resolve conflicts and absent scale/hidden geometry with the user. Unsupported details stay `UNKNOWN`/`BLOCKED`; a plausible render or local plan PASS cannot establish that nothing is missing. Never discard such details merely because this generator cannot represent them.
 - **Line hierarchy (weights from the ISO 128 series):** cut walls are heaviest (0.50 external, 0.35 internal) with solid poché; openings 0.25; dimensions and grids 0.18; the sheet frame 0.70. Everything is ByLayer.
 - **Text (heights from the ISO 3098 series):** nothing plots below 2.5 mm, the profile minimum (ISO 3098 also allows 1.8 mm; offices can change it). Notes and tags 2.5, room names 3.5, grid bubbles and titles 5, sheet titles 7. Model-space text height = plotted height × scale.
 - **Plans:** doors show leaf and swing, windows show frame and glass, every opening is tagged and appears in its schedule, every room shows name and area. Exterior dimensions run as two chains (openings, then overall) outside the building, with text reading from the bottom or right. Grid lines run past the dimensions with bubbles at both ends.

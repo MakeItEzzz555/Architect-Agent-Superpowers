@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased — trustworthy local drawing verification
+
+- Preserve failure receipts on CSV parser errors and fail incomplete builds when any required PDF is not generated.
+
+- Require explicit mm units, finite typed geometry, valid level elevation/height and vertically hosted openings; document building-spec.v1 while accepting legacy version omission.
+- Independently measure supported DXF wall/opening/room primitives and multiplicity, with optional portable element associations. Detect seeded deletion, movement, resize and duplication even when labels and schedules remain unchanged.
+- Require PDF page/vector/scale checks and register-date agreement. Add pinned pypdf to the CAD CI job and reject accidental missing CAD dependencies there.
+- Retain byte-bound verification receipts, validator/dependency versions, source revision and explicit unsupported coverage. Preserve existing CLI/report keys and synchronized portable provider copies.
+- Native AutoCAD, semantic 3D, complete image/detail reconstruction, atomic output publication and professional acceptance remain separate pending gates.
+
 ## Unreleased — community progress documentation (2026-10-23)
 
 - Documented implemented skills, DXF/PDF/schedule generation, read-only revision-impact checks and Gridline's local MCP review tool with direct PR evidence.

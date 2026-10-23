@@ -1,0 +1,397 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Gridline building-spec.v1",
+  "description": "Legacy documents may omit schema_version. All JSON numbers must be finite. Runtime validation additionally enforces unique IDs, reference integrity, nonzero spans, schedule/title constraints, horizontal/vertical opening fit and office-profile sheet rules. Unknown fields are retained as source data but are not automatically drawn or verified.",
+  "type": "object",
+  "required": [
+    "project",
+    "units",
+    "levels",
+    "walls",
+    "sheets"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "building-spec.v1"
+    },
+    "units": {
+      "const": "mm"
+    },
+    "standard": {
+      "type": "string"
+    },
+    "project": {
+      "type": "object",
+      "required": [
+        "name",
+        "number",
+        "architect",
+        "drawn_by",
+        "status",
+        "revision",
+        "date"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Nonempty, at most 255 UTF-8 bytes; global IDs are unique."
+        },
+        "number": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Nonempty, at most 255 UTF-8 bytes; global IDs are unique."
+        },
+        "architect": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Nonempty, at most 255 UTF-8 bytes; global IDs are unique."
+        },
+        "drawn_by": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Nonempty, at most 255 UTF-8 bytes; global IDs are unique."
+        },
+        "status": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Nonempty, at most 255 UTF-8 bytes; global IDs are unique."
+        },
+        "revision": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Nonempty, at most 255 UTF-8 bytes; global IDs are unique."
+        },
+        "date": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Nonempty, at most 255 UTF-8 bytes; global IDs are unique."
+        },
+        "north_deg": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": true
+    },
+    "levels": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/level"
+      }
+    },
+    "walls": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/wall"
+      }
+    },
+    "grids": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/grid"
+      }
+    },
+    "openings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/opening"
+      }
+    },
+    "rooms": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/room"
+      }
+    },
+    "sheets": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/sheet"
+      },
+      "minItems": 1
+    }
+  },
+  "$defs": {
+    "level": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "elevation",
+        "height"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Nonempty, at most 255 UTF-8 bytes; global IDs are unique."
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Nonempty, at most 255 UTF-8 bytes; global IDs are unique."
+        },
+        "elevation": {
+          "type": "number"
+        },
+        "height": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      },
+      "additionalProperties": true
+    },
+    "grid": {
+      "type": "object",
+      "required": [
+        "id",
+        "start",
+        "end"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Nonempty, at most 255 UTF-8 bytes; global IDs are unique."
+        },
+        "start": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "end": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        }
+      },
+      "additionalProperties": true
+    },
+    "wall": {
+      "type": "object",
+      "required": [
+        "id",
+        "level",
+        "type",
+        "start",
+        "end",
+        "thickness"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Nonempty, at most 255 UTF-8 bytes; global IDs are unique."
+        },
+        "level": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Nonempty, at most 255 UTF-8 bytes; global IDs are unique."
+        },
+        "type": {
+          "enum": [
+            "external",
+            "internal"
+          ]
+        },
+        "start": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "end": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "thickness": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      },
+      "additionalProperties": true
+    },
+    "opening": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "wall",
+        "offset",
+        "width",
+        "height"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Nonempty, at most 255 UTF-8 bytes; global IDs are unique."
+        },
+        "kind": {
+          "enum": [
+            "door",
+            "window"
+          ]
+        },
+        "wall": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Nonempty, at most 255 UTF-8 bytes; global IDs are unique."
+        },
+        "offset": {
+          "type": "number",
+          "minimum": 0
+        },
+        "width": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "height": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "sill": {
+          "type": "number",
+          "minimum": 0
+        },
+        "hinge": {
+          "enum": [
+            "start",
+            "end"
+          ]
+        },
+        "opens": {
+          "enum": [
+            "left",
+            "right"
+          ]
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "window"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "sill"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "door"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "hinge",
+              "opens"
+            ]
+          }
+        }
+      ]
+    },
+    "room": {
+      "type": "object",
+      "required": [
+        "id",
+        "level",
+        "name",
+        "boundary"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Nonempty, at most 255 UTF-8 bytes; global IDs are unique."
+        },
+        "level": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Nonempty, at most 255 UTF-8 bytes; global IDs are unique."
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Nonempty, at most 255 UTF-8 bytes; global IDs are unique."
+        },
+        "boundary": {
+          "type": "array",
+          "minItems": 3,
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "sheet": {
+      "type": "object",
+      "required": [
+        "number",
+        "title",
+        "level",
+        "scale",
+        "size"
+      ],
+      "properties": {
+        "number": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Nonempty, at most 255 UTF-8 bytes; global IDs are unique."
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Nonempty, at most 255 UTF-8 bytes; global IDs are unique."
+        },
+        "level": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Nonempty, at most 255 UTF-8 bytes; global IDs are unique."
+        },
+        "scale": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "size": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Nonempty, at most 255 UTF-8 bytes; global IDs are unique."
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

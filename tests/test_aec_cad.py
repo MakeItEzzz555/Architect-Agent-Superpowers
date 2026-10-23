@@ -1,5 +1,6 @@
 import csv
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -14,6 +15,8 @@ EXAMPLE = SKILL / "references" / "example-house.building.json"
 try:
     import ezdxf
 except ImportError:
+    if os.environ.get("GRIDLINE_REQUIRE_CAD_TESTS") == "1":
+        raise
     ezdxf = None
 
 

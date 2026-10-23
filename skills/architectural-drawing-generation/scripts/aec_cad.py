@@ -5,18 +5,25 @@ build: SPEC.json -> per-sheet DXF (model-space plan + paper-space sheet), PDF, a
        room/door/window schedules and a sheet register, all derived from the same spec.
 check: reads the outputs back from disk and verifies standards and coordination.
 
-Every dimension comes from the spec; nothing is inferred. Requires ezdxf
-(and matplotlib for PDF): pip install ezdxf matplotlib
+Every dimension comes from the spec; nothing is inferred. Requires ezdxf,
+matplotlib for PDF generation and pypdf for mandatory PDF readback.
 """
 from __future__ import annotations
 
 import argparse
 import csv
+import io
 import json
 import math
 import re
 import sys
 from pathlib import Path
+
+# Installed skill bundles also support Python's isolated (-I) invocation.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from building_spec import finite, shape_errors
+from aec_readback import geometry_check, plan_requirements, pdf_check, TOLERANCE_MM, PDF_TOLERANCE_PT
+from aec_receipt import coverage, finish
 
 try:
     import ezdxf
@@ -43,21 +50,40 @@ def deep_merge(base, override):
     return out
 
 
-def load_profile(name: str) -> dict:
+def load_profile(name: str, sources=None, seen=None) -> dict:
     """A built-in profile name, or a path to an office profile that may say "extends": "<built-in>"."""
     builtin = REFERENCES / "standards" / f"{name}.json"
     path = builtin if builtin.exists() else Path(name)
-    data = json.loads(path.read_text(encoding="utf-8"))
+    seen = set() if seen is None else seen
+    if path.resolve() in seen:
+        raise ValueError("cyclic standards profile inheritance")
+    seen.add(path.resolve())
+    data = read_json(path, sources)
     parent = data.pop("extends", None)
-    return deep_merge(load_profile(parent), data) if parent else data
+    return deep_merge(load_profile(parent, sources, seen), data) if parent else data
 
 
-def load(spec_path: Path, standard: str | None):
-    spec = json.loads(spec_path.read_text(encoding="utf-8"))
+def read_json(path, sources=None):
+    if sources is not None:
+        sources[str(path)] = None
+    with path.open("rb") as stream:
+        data = stream.read(10 * 1024 * 1024 + 1)
+    if len(data) > 10 * 1024 * 1024:
+        raise ValueError(f"{path.name}: JSON exceeds 10 MiB limit")
+    if sources is not None:
+        sources[str(path)] = data
+    value = json.loads(data)
+    if not isinstance(value, dict):
+        raise ValueError(f"{path.name}: root must be an object")
+    return value
+
+
+def load(spec_path: Path, standard: str | None, sources=None):
+    spec = read_json(spec_path, sources)
     spec.setdefault("project", {})
     for group in ("levels", "grids", "walls", "openings", "rooms", "sheets"):
         spec.setdefault(group, [])
-    return spec, load_profile(standard or spec.get("standard", "iso13567"))
+    return spec, load_profile(standard or spec.get("standard", "iso13567"), sources)
 
 
 # ---------------------------------------------------------------- geometry (mm)
@@ -119,7 +145,9 @@ def outward(wall, middle):
 # ---------------------------------------------------------------- validation
 
 def validate(spec: dict, profile: dict) -> list[str]:
-    errors = []
+    errors = shape_errors(spec)
+    if errors:
+        return errors
     project = spec.get("project", {})
     for key in ("name", "number", "architect", "drawn_by", "status", "revision", "date"):
         if not str(project.get(key, "")).strip():
@@ -129,8 +157,8 @@ def validate(spec: dict, profile: dict) -> list[str]:
         errors.append(f"project.status {status!r} is not one of {profile['statuses']}")
     if status in profile["issued_statuses"] and not str(project.get("checked_by", "")).strip():
         errors.append(f"status {status!r} needs project.checked_by: issued drawings must be checked")
-    if spec.get("units", "mm") != "mm":
-        errors.append("units must be mm")
+    if spec.get("units") != "mm":
+        errors.append("units must be explicitly supplied as mm")
 
     ids = {}
     for group in ("levels", "grids", "walls", "openings", "rooms"):
@@ -139,6 +167,13 @@ def validate(spec: dict, profile: dict) -> list[str]:
                 errors.append(f"duplicate id {item.get('id')!r} in {group} and {ids[item['id']]}")
             ids[item.get("id")] = group
     levels = {lv["id"] for lv in spec.get("levels", [])}
+    if not levels:
+        errors.append("at least one level is required")
+    for lv in spec["levels"]:
+        if not finite(lv.get("elevation")) or not finite(lv.get("height")) or lv.get("height", 0) <= 0:
+            errors.append(f"level {lv['id']}: finite elevation and positive height are required")
+        if not isinstance(lv.get("name"), str) or not lv["name"].strip():
+            errors.append(f"level {lv['id']}: name is required")
     walls = {}
     for w in spec.get("walls", []):
         missing = [k for k in ("id", "level", "type", "start", "end", "thickness") if k not in w]
@@ -152,7 +187,7 @@ def validate(spec: dict, profile: dict) -> list[str]:
             errors.append(f"wall {w['id']}: unknown level {w.get('level')!r}")
         if w.get("type") not in ("external", "internal"):
             errors.append(f"wall {w['id']}: type must be external or internal")
-        if not (w.get("thickness", 0) > 0) or frame(w)[3] <= 0:
+        if not (w.get("thickness", 0) > 0) or not finite(frame(w)[3]) or frame(w)[3] <= 0:
             errors.append(f"wall {w['id']}: needs a positive thickness and length")
 
     by_wall = {}
@@ -174,6 +209,12 @@ def validate(spec: dict, profile: dict) -> list[str]:
                           f"(offset {o.get('offset')} + width {o.get('width')} > length {frame(wall)[3]:.0f})")
         if o.get("kind") == "door" and (o.get("hinge") not in ("start", "end") or o.get("opens") not in ("left", "right")):
             errors.append(f"door {o['id']}: hinge must be start|end and opens left|right")
+        level = next((lv for lv in spec["levels"] if lv["id"] == wall.get("level")), None)
+        sill = o.get("sill") if o["kind"] == "window" else 0
+        if not finite(sill) or sill < 0:
+            errors.append(f"opening {o['id']}: explicit nonnegative sill is required for windows")
+        elif level and finite(level.get("height")) and sill + o["height"] > level["height"]:
+            errors.append(f"opening {o['id']}: sill plus height exceeds host level height")
         by_wall.setdefault(wall["id"], []).append(o)
     for wall_id, items in by_wall.items():
         items = sorted(items, key=lambda o: o.get("offset", 0))
@@ -182,25 +223,27 @@ def validate(spec: dict, profile: dict) -> list[str]:
                 errors.append(f"openings {a['id']} and {b['id']} overlap in wall {wall_id}")
 
     for g in spec.get("grids", []):
-        if "start" not in g or "end" not in g or frame(g)[3] <= 0:
+        if "start" not in g or "end" not in g or not finite(frame(g)[3]) or frame(g)[3] <= 0:
             errors.append(f"grid {g.get('id', '?')}: needs distinct start and end points")
     for r in spec.get("rooms", []):
         if r.get("level") not in levels:
             errors.append(f"room {r['id']}: unknown level {r.get('level')!r}")
-        if len(r.get("boundary", [])) < 3 or area_m2(r.get("boundary", [])) <= 0:
+        if len(r.get("boundary", [])) < 3 or not finite(area_m2(r.get("boundary", []))) or area_m2(r.get("boundary", [])) <= 0:
             errors.append(f"room {r['id']}: boundary needs at least three points enclosing an area")
         if not str(r.get("name", "")).strip():
             errors.append(f"room {r['id']}: name is required")
 
     numbers = set()
     for sh in spec.get("sheets", []):
-        if not re.match(profile["sheet_number_pattern"], str(sh.get("number", ""))):
+        if not re.fullmatch(profile["sheet_number_pattern"], str(sh.get("number", ""))):
             errors.append(f"sheet {sh.get('number')!r}: number does not match {profile['sheet_number_pattern']}")
         if sh.get("number") in numbers:
             errors.append(f"duplicate sheet number {sh.get('number')!r}")
         numbers.add(sh.get("number"))
         if sh.get("level") not in levels:
             errors.append(f"sheet {sh.get('number')}: unknown level {sh.get('level')!r}")
+        elif not any(w.get("level") == sh["level"] for w in walls.values()):
+            errors.append(f"sheet {sh.get('number')}: no walls on level {sh['level']}")
         if sh.get("scale") not in profile["scales"]:
             errors.append(f"sheet {sh.get('number')}: scale 1:{sh.get('scale')} is not a standard scale")
         if sh.get("size") not in profile["paper"]:
@@ -216,6 +259,7 @@ def validate(spec: dict, profile: dict) -> list[str]:
 
 def new_document(profile: dict, scale: int):
     doc = ezdxf.new("R2018", setup=True, units=ezdxf.units.MM)
+    doc.appids.add("GRIDLINE")
     doc.header["$MEASUREMENT"] = 1
     doc.header["$LUNITS"] = 2
     doc.header["$PSLTSCALE"] = 1
@@ -285,7 +329,7 @@ def draw_plan(msp, spec, profile, level_id, scale):
             if b - a < 1e-6:
                 continue
             outline = [at(start, u, n, a, -t / 2), at(start, u, n, b, -t / 2), at(start, u, n, b, t / 2), at(start, u, n, a, t / 2)]
-            msp.add_lwpolyline(outline, close=True, dxfattribs={"layer": layer})
+            msp.add_lwpolyline(outline, close=True, dxfattribs={"layer": layer}).set_xdata("GRIDLINE", [(1000, w["id"])])
             hatch = msp.add_hatch(dxfattribs={"layer": L["wall_poche"]})
             hatch.set_solid_fill(color=256)
             hatch.paths.add_polyline_path(outline, is_closed=True)
@@ -294,10 +338,10 @@ def draw_plan(msp, spec, profile, level_id, scale):
         for o in openings.get(w["id"], []):
             a, b = o["offset"], o["offset"] + o["width"]
             for s in (a, b):  # jambs
-                msp.add_line(at(start, u, n, s, -t / 2), at(start, u, n, s, t / 2), dxfattribs={"layer": L["opening"]})
+                msp.add_line(at(start, u, n, s, -t / 2), at(start, u, n, s, t / 2), dxfattribs={"layer": L["opening"]}).set_xdata("GRIDLINE", [(1000, o["id"])])
             if o["kind"] == "window":
                 for d in (-t / 2, 0.0, t / 2):
-                    msp.add_line(at(start, u, n, a, d), at(start, u, n, b, d), dxfattribs={"layer": L["opening"]})
+                    msp.add_line(at(start, u, n, a, d), at(start, u, n, b, d), dxfattribs={"layer": L["opening"]}).set_xdata("GRIDLINE", [(1000, o["id"])])
                 swing = None
             else:
                 side = n if o["opens"] == "left" else (-n[0], -n[1])
@@ -305,12 +349,12 @@ def draw_plan(msp, spec, profile, level_id, scale):
                 sign = 1 if side == n else -1
                 hinge = at(start, u, n, hinge_s, sign * t / 2)
                 tip = (hinge[0] + side[0] * o["width"], hinge[1] + side[1] * o["width"])
-                msp.add_line(hinge, tip, dxfattribs={"layer": L["opening"]})
+                msp.add_line(hinge, tip, dxfattribs={"layer": L["opening"]}).set_xdata("GRIDLINE", [(1000, o["id"])])
                 leaf = math.degrees(math.atan2(side[1], side[0]))
                 closed_dir = (u[0], u[1]) if free_s > hinge_s else (-u[0], -u[1])
                 closed = math.degrees(math.atan2(closed_dir[1], closed_dir[0]))
                 a1, a2 = (leaf, closed) if (closed - leaf) % 360 == 90 else (closed, leaf)
-                msp.add_arc(hinge, o["width"], a1, a2, dxfattribs={"layer": L["opening"]})
+                msp.add_arc(hinge, o["width"], a1, a2, dxfattribs={"layer": L["opening"]}).set_xdata("GRIDLINE", [(1000, o["id"])])
                 swing = side
             # Tags stay off the outside (dimension chains) and clear of a door's swing.
             tag_side = (-out[0], -out[1]) if w["type"] == "external" else (-swing[0], -swing[1]) if swing else n
@@ -334,7 +378,7 @@ def draw_plan(msp, spec, profile, level_id, scale):
     for r in spec.get("rooms", []):
         if r["level"] != level_id:
             continue
-        msp.add_lwpolyline(r["boundary"], close=True, dxfattribs={"layer": L["room_boundary"]})
+        msp.add_lwpolyline(r["boundary"], close=True, dxfattribs={"layer": L["room_boundary"]}).set_xdata("GRIDLINE", [(1000, r["id"])])
         cx, cy = centroid(r["boundary"])
         text(msp, r["name"], (cx, cy + 0.8 * tm["room_name"]), tm["room_name"], L["room_tag"])
         text(msp, f"{area_m2(r['boundary']):.2f} m²", (cx, cy - 0.8 * tm["room_area"]), tm["room_area"], L["room_tag"])
@@ -451,7 +495,11 @@ def write_pdf(doc, layout, size, path: Path) -> bool:
     ax.set_ylim(0, size[1])
     ax.set_aspect("equal")
     ax.axis("off")
-    fig.savefig(path, format="pdf")
+    title = next(e for e in layout.query("INSERT") if e.dxf.name == "AAS-TITLE-BLOCK")
+    values = {a.dxf.tag: a.dxf.text for a in title.attribs}
+    # Project number is not a title-block attribute; project name anchors identity.
+    identity = f"Gridline {values['PROJECT']} {values['NUMBER']} {values['REVISION']} {values['DATE']}"
+    fig.savefig(path, format="pdf", metadata={"Title": identity})
     plt.close(fig)
     return True
 
@@ -464,7 +512,11 @@ def write_csv(path: Path, header, rows):
 
 
 def build(spec_path: Path, out: Path, standard: str | None) -> int:
-    spec, profile = load(spec_path, standard)
+    try:
+        spec, profile = load(spec_path, standard)
+    except (OSError, ValueError, TypeError, RecursionError) as exc:
+        print(f"ERROR: invalid input: {exc}", file=sys.stderr)
+        return 1
     errors = validate(spec, profile)
     if errors:
         print("\n".join(f"ERROR: {e}" for e in errors), file=sys.stderr)
@@ -499,22 +551,56 @@ def build(spec_path: Path, out: Path, standard: str | None) -> int:
     write_csv(out / "sheet-register.csv", ["number", "title", "scale", "size", "revision", "status", "date"],
               [[s["number"], s["title"], f"1:{s['scale']}", s["size"], project["revision"], project["status"], project["date"]]
                for s in spec["sheets"]])
-    print(f"BUILT {len(spec['sheets'])} sheets ({pdfs} PDF) and 4 schedules in {out}")
     if pdfs < len(spec["sheets"]):
-        print("NOTE: PDFs need matplotlib (pip install matplotlib)")
+        print(f"ERROR: build incomplete: produced {pdfs}/{len(spec['sheets'])} required PDFs; "
+              "check will fail. Install matplotlib (pip install matplotlib).", file=sys.stderr)
+        return 1
+    print(f"BUILT {len(spec['sheets'])} sheets ({pdfs} PDF) and 4 schedules in {out}")
     return 0
 
 
 # ---------------------------------------------------------------- checking
 
-def read_csv(path: Path):
-    with path.open(newline="", encoding="utf-8") as fh:
-        return list(csv.DictReader(fh))
+def read_csv(data):
+    return list(csv.DictReader(io.StringIO(data.decode("utf-8"), newline="")))
 
 
 def check(spec_path: Path, out: Path, standard: str | None) -> int:
-    spec, profile = load(spec_path, standard)
-    errors, warnings, checked = validate(spec, profile), [], []
+    sources, outputs, gates = {}, {}, coverage()
+    errors, warnings, checked = [], [], []
+    profile_name = "UNKNOWN"
+    try:
+        spec, profile = load(spec_path, standard, sources)
+        profile_name = profile["name"]
+        errors.extend(validate(spec, profile))
+        gates["spec"]["status"] = "FAIL" if errors else "PASS"
+        if not errors:
+            names = [s["number"] + suffix for s in spec["sheets"] for suffix in (".dxf", ".pdf")]
+            names += ["room-schedule.csv", "door-schedule.csv", "window-schedule.csv", "sheet-register.csv"]
+            for name in names:
+                outputs[name] = None
+                try:
+                    with (out / name).open("rb") as stream:
+                        blob = stream.read(64 * 1024 * 1024 + 1)
+                    if len(blob) > 64 * 1024 * 1024:
+                        errors.append(f"{name}: exceeds supported 64 MiB input limit (not hashed)")
+                    else:
+                        outputs[name] = blob
+                except FileNotFoundError:
+                    pass
+            for sheet in spec["sheets"]:
+                for gate in ("dxf_standards", "dxf_geometry", "pdf_vectors"):
+                    gates[gate]["sheets"][sheet["number"]] = {"status": "NOT_RUN"}
+            check_outputs(spec, profile, outputs, gates, errors, warnings, checked)
+    except (OSError, ValueError, TypeError, KeyError, ArithmeticError, RecursionError, csv.Error,
+            ezdxf.DXFError) as exc:
+        errors.append(f"validation could not complete: {type(exc).__name__}: {exc}")
+        if gates["spec"]["status"] == "NOT_RUN":
+            gates["spec"]["status"] = "FAIL"
+    return finish(out, profile_name, sources, outputs, gates, errors, warnings, checked)
+
+
+def check_outputs(spec, profile, outputs, gates, errors, warnings, checked):
     layers = {v["name"]: v for v in profile["layers"].values()}
     L = {k: v["name"] for k, v in profile["layers"].items()}
     minimum = profile["min_text_mm"] - 1e-6
@@ -522,20 +608,28 @@ def check(spec_path: Path, out: Path, standard: str | None) -> int:
     if not str(project.get("checked_by", "")).strip():
         warnings.append("project.checked_by is empty: no one has checked these drawings yet")
 
-    # File checks assume a valid spec; report spec errors alone rather than crash on them.
-    for sheet in [] if errors else spec["sheets"]:
+    for sheet in spec["sheets"]:
         number, scale = sheet["number"], sheet["scale"]
-        path = out / f"{number}.dxf"
-        if not path.exists():
-            errors.append(f"{number}: {path.name} is missing")
+        data = outputs[f"{number}.dxf"]
+        if data is None:
+            errors.append(f"{number}: {number}.dxf is missing or unavailable")
             continue
-        doc = ezdxf.readfile(path)
+        start_errors = len(errors)
+        try:
+            doc = ezdxf.read(io.StringIO(data.decode("utf-8")))
+        except (ValueError, ezdxf.DXFError) as exc:
+            errors.append(f"{number}: invalid DXF: {exc}")
+            gates["dxf_standards"]["sheets"][number] = {"status": "FAIL"}
+            continue
         audit = doc.audit()
-        if audit.has_errors:
-            errors.append(f"{number}: DXF audit found {len(audit.errors)} errors")
+        if audit.has_errors or audit.has_fixes:
+            errors.append(f"{number}: DXF audit found {len(audit.errors)} errors and {len(audit.fixes)} repairs")
+        if doc.header.get("$INSUNITS") != 4:
+            errors.append(f"{number}: DXF units must be millimetres")
         for name, want in layers.items():
             layer = doc.layers.get(name) if doc.layers.has_entry(name) else None
             if layer is None:
+                errors.append(f"{number}: required layer {name} is missing")
                 continue
             got = (layer.dxf.color, layer.dxf.lineweight, layer.dxf.linetype.upper(), bool(layer.dxf.plot))
             if got != (want["color"], want["lineweight"], want["linetype"].upper(), want["plot"]):
@@ -544,6 +638,7 @@ def check(spec_path: Path, out: Path, standard: str | None) -> int:
             psp = doc.layouts.get(number)
         except KeyError:
             errors.append(f"{number}: no paper-space layout named {number}")
+            gates["dxf_standards"]["sheets"][number] = {"status": "FAIL"}
             continue
         msp = doc.modelspace()
         for space, layout in (("model", msp), ("paper", psp)):
@@ -589,13 +684,19 @@ def check(spec_path: Path, out: Path, standard: str | None) -> int:
         if not any(project["status"] in s for s in stamps):
             errors.append(f"{number}: status stamp missing")
         viewports = [v for v in psp.query("VIEWPORT") if v.dxf.get("id", 0) != 1]
-        if not any(abs(v.dxf.view_height / v.dxf.height - scale) < 1e-6 and v.dxf.flags & ezdxf.const.VSF_LOCK_ZOOM
-                   for v in viewports):
+        valid_viewports = [v for v in viewports if v.dxf.height > 0 and
+                           abs(v.dxf.view_height / v.dxf.height - scale) < 1e-6 and
+                           v.dxf.flags & ezdxf.const.VSF_LOCK_ZOOM and not v.dxf.view_twist_angle and
+                           tuple(v.dxf.view_direction_vector) == (0, 0, 1)]
+        if len(viewports) != 1 or len(valid_viewports) != 1:
             errors.append(f"{number}: no locked viewport at 1:{scale}")
 
         level_walls = {w["id"] for w in spec["walls"] if w["level"] == sheet["level"]}
         want_tags = {o["id"] for o in spec["openings"] if o["wall"] in level_walls}
-        got_tags = {e.dxf.text for e in msp.query("TEXT") if e.dxf.layer == L["opening_tag"]}
+        tag_list = [e.dxf.text for e in msp.query("TEXT") if e.dxf.layer == L["opening_tag"]]
+        got_tags = set(tag_list)
+        if len(tag_list) != len(got_tags):
+            errors.append(f"{number}: duplicate opening tags")
         if want_tags != got_tags:
             errors.append(f"{number}: opening tags {sorted(got_tags)} do not match the spec {sorted(want_tags)}")
         room_text = {e.dxf.text for e in msp.query("TEXT") if e.dxf.layer == L["room_tag"]}
@@ -604,15 +705,29 @@ def check(spec_path: Path, out: Path, standard: str | None) -> int:
                 label = f"{area_m2(r['boundary']):.2f} m²"
                 if r["name"] not in room_text or label not in room_text:
                     errors.append(f"{number}: room {r['id']} tag missing or area label is not {label}")
+        gates["dxf_standards"]["sheets"][number] = {"status": "FAIL" if len(errors) > start_errors else "PASS"}
+        requirements = plan_requirements(spec, profile, sheet["level"])
+        geometric_errors, evidence = geometry_check(doc, requirements, number, profile)
+        errors.extend(geometric_errors)
+        gates["dxf_geometry"]["sheets"][number] = {
+            "status": "FAIL" if geometric_errors else "PASS", "tolerance_mm": TOLERANCE_MM,
+            "expected_primitives": len(requirements), "measured": evidence}
+        pdf_data = outputs[number + ".pdf"]
+        try:
+            if pdf_data is None:
+                raise ValueError("required PDF is missing or unavailable")
+            pdf_errors, pdf_evidence = pdf_check(pdf_data, spec, profile, sheet, requirements,
+                                                valid_viewports[0] if len(valid_viewports) == 1 else None)
+            errors.extend(pdf_errors)
+            gates["pdf_vectors"]["sheets"][number] = {
+                "status": "FAIL" if pdf_errors else "PASS", "tolerance_pt": PDF_TOLERANCE_PT, **pdf_evidence}
+        except ImportError:
+            errors.append(f"{number}.pdf: mandatory validator unavailable: pip install pypdf==6.21.2")
+        except Exception as exc:
+            # PDF parsers expose several exception types; every parser failure blocks PASS.
+            errors.append(f"{number}.pdf: validation failed: {type(exc).__name__}: {exc}")
+            gates["pdf_vectors"]["sheets"][number] = {"status": "FAIL"}
         checked.append(number)
-
-    if errors:
-        report = {"standard": profile["name"], "errors": errors, "warnings": warnings, "checked": []}
-        (out / "check-report.json").parent.mkdir(parents=True, exist_ok=True)
-        (out / "check-report.json").write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-        print("\n".join(f"ERROR: {e}" for e in errors))
-        print(f"FAIL: {len(errors)} spec errors; files not checked")
-        return 1
     # Independent, field-complete schedule readback catches stale type, height,
     # sill, wall or level after a client-driven opening change. Width alone is
     # not enough for cross-sheet coordination.
@@ -647,11 +762,12 @@ def check(spec_path: Path, out: Path, standard: str | None) -> int:
         expected_schedules[f"{kind}-schedule.csv"] = expected
 
     for name, want in expected_schedules.items():
-        path = out / name
-        if not path.exists():
+        if outputs[name] is None:
             errors.append(f"{name} is missing")
+            gates["schedules"]["sheets"][name] = {"status": "FAIL"}
             continue
-        rows = read_csv(path)
+        schedule_start = len(errors)
+        rows = read_csv(outputs[name])
         got = {row.get("id"): row for row in rows}
         if len(got) != len(rows) or any(not row.get("id") for row in rows):
             errors.append(f"{name} contains duplicate or missing IDs")
@@ -661,25 +777,19 @@ def check(spec_path: Path, out: Path, standard: str | None) -> int:
         )
         if diff:
             errors.append(f"{name} does not match spec fields for {diff}")
+        gates["schedules"]["sheets"][name] = {"status": "FAIL" if len(errors) > schedule_start else "PASS"}
         checked.append(name)
-    register = out / "sheet-register.csv"
-    if register.exists():
-        got = [(r["number"], r["title"], r["scale"], r["size"], r["revision"], r["status"]) for r in read_csv(register)]
-        want = [(s["number"], s["title"], f"1:{s['scale']}", s["size"], project["revision"], project["status"]) for s in spec["sheets"]]
+    register = outputs["sheet-register.csv"]
+    if register is not None:
+        got = [(r["number"], r["title"], r["scale"], r["size"], r["revision"], r["status"], r["date"]) for r in read_csv(register)]
+        want = [(s["number"], s["title"], f"1:{s['scale']}", s["size"], project["revision"], project["status"], project["date"]) for s in spec["sheets"]]
         if got != want:
             errors.append("sheet-register.csv does not match the sheets in the spec")
-        checked.append(register.name)
+        gates["schedules"]["sheets"]["sheet-register.csv"] = {"status": "PASS" if got == want else "FAIL"}
+        checked.append("sheet-register.csv")
     else:
         errors.append("sheet-register.csv is missing")
-
-    report = {"standard": profile["name"], "errors": errors, "warnings": warnings, "checked": checked}
-    (out / "check-report.json").write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    for e in errors:
-        print(f"ERROR: {e}")
-    for w in warnings:
-        print(f"WARNING: {w}")
-    print(f"{'FAIL' if errors else 'PASS'}: {len(errors)} errors, {len(warnings)} warnings; checked {len(checked)} items")
-    return 1 if errors else 0
+        gates["schedules"]["sheets"]["sheet-register.csv"] = {"status": "FAIL"}
 
 
 def main():
@@ -690,7 +800,7 @@ def main():
     parser.add_argument("--standard", help="iso13567, ncs, or a path to an office profile JSON")
     args = parser.parse_args()
     if ezdxf is None:
-        print("aec_cad.py needs ezdxf: pip install ezdxf matplotlib", file=sys.stderr)
+        print("aec_cad.py needs ezdxf: pip install ezdxf matplotlib pypdf", file=sys.stderr)
         sys.exit(2)
     sys.exit((build if args.command == "build" else check)(args.spec, args.out, args.standard))
 
