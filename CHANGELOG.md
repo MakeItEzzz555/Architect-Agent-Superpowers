@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased — trustworthy local drawing verification
+
+- Require explicit mm units, finite typed geometry, valid level elevation/height and vertically hosted openings; document building-spec.v1 while accepting legacy version omission.
+- Independently measure supported DXF wall/opening/room primitives and multiplicity, with optional portable element associations. Detect seeded deletion, movement, resize and duplication even when labels and schedules remain unchanged.
+- Require PDF page/vector/scale checks and register-date agreement. Add pinned pypdf to the CAD CI job and reject accidental missing CAD dependencies there.
+- Retain byte-bound verification receipts, validator/dependency versions, source revision and explicit unsupported coverage. Preserve existing CLI/report keys and synchronized portable provider copies.
+- Native AutoCAD, semantic 3D, complete image/detail reconstruction, atomic output publication and professional acceptance remain separate pending gates.
+
 ## 0.7.0 — Gridline rebrand and installer migration
 
 - Rename the public project, provider plugin identities, documentation and install instructions to **Gridline**.
