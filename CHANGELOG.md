@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased — community progress documentation (2026-10-23)
+
+- Documented implemented skills, DXF/PDF/schedule generation, read-only revision-impact checks and Gridline's local MCP review tool with direct PR evidence.
+- Published an issue-by-issue [community progress ledger](docs/COMMUNITY_PROGRESS_2026-10-23.md). Issues #10–#16 stay open because their complete acceptance criteria have **not** been met.
+- Clarified that library-level checks do not prove complete geometric correctness, native AutoCAD compatibility, IFC/IDS validation, or autonomous BIM editing. This entry describes documentation updates, **not shipped verifier repairs**.
+
+
 ## 0.7.0 — Gridline rebrand and installer migration
 
 - Rename the public project, provider plugin identities, documentation and install instructions to **Gridline**.
@@ -9,7 +16,7 @@
 
 ## 0.6.0 - 2026-10-22
 - Added a coordinated CAD pipeline to `architectural-drawing-generation` (`scripts/aec_cad.py`). One building spec produces, per sheet, a DXF (model-space plan plus a paper-space sheet with a frame using ISO 5457 margins, a title block within ISO 7200's 180 mm width, status stamp, scale bar, north arrow and a locked viewport at scale) and a vector PDF, plus room/door/window schedules and a sheet register.
-- Added `aec_cad.py check`, which reads the outputs back and fails on off-standard layers, colour/lineweight overrides, text below 2.5 mm plotted, empty title fields, missing stamps or viewports, and tags, room areas, schedules or registers that disagree with the geometry.
+- Added `aec_cad.py check`, which reads the outputs back and fails on off-standard layers, colour/lineweight overrides, text below 2.5 mm plotted, empty title fields, missing stamps or viewports, and certain drawing tags, room-area annotations, schedule fields or register entries that disagree with the **building specification**. Independent full geometry comparison was not implemented in v0.6.0.
 - Added standards profiles (`references/standards/iso13567.json`, `ncs.json`) and office profiles that `extend` them.
 - The drawing skill now applies drafting defaults without being asked (line hierarchy, text sizes, tags, dimension chains, grids, sheets, status stamps) and requires a passing check before presenting a drawing.
 - Optional dependency: `ezdxf` (and `matplotlib` for PDF). Without them the pipeline exits with an install message and `aec_draw.py` remains available.
