@@ -11,7 +11,7 @@
 ![AEC](https://img.shields.io/badge/AEC-architecture%20%2B%20BIM%20%2B%20civil-475569)
 [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-**[Copy the install prompt](#install-with-your-ai-agent-copy-once)** · **[Skills](#the-30-superpowers)** · **[Drawings](#coordinated-cad-drawings)** · **[Tools](#cad--bim--aec-tools)** · **[Research](docs/RESEARCH.md)**
+**[Copy the install prompt](#install-with-your-ai-agent-copy-once)** · **[Current status](#what-gridline-actually-ships--october-2026)** · **[Skills](#the-30-superpowers)** · **[Drawings](#coordinated-cad-drawings)** · **[Tools](#cad--bim--aec-tools)** · **[Research](docs/RESEARCH.md)**
 
 </div>
 
@@ -20,6 +20,28 @@
 Gridline gives capable AI coding/agent tools a structured way to help with the **full building-project lifecycle**: programming and feasibility, site analysis, concept design, plans/sections/elevations, BIM/CAD workflows, structural/MEP/civil coordination, technical documentation, performance, quantities/cost, construction administration, handover and post-occupancy.
 
 It is not one giant “act like an architect” prompt. Each specialist is discovered only when relevant, keeping the always-loaded context small and the workflow auditable.
+
+## What Gridline actually ships — October 2026
+
+Gridline combines **30 portable AEC skills and 12 specialist agents** with runnable drafting and review utilities. The descriptions below distinguish **implemented software**, **partial review coverage**, and **planned capabilities**. Architectural validation is not professional certification.
+
+| Capability | Current evidence and scope |
+| --- | --- |
+| Agent installation and skill routing | Cross-provider packages, portable skill directories, a one-copy installation prompt, provider activation fixtures, and reversible/ownership-aware global installers ([v0.5.0–0.5.1](CHANGELOG.md)) |
+| Conceptual drawings | Dependency-free JSON-to-SVG/DXF engine for six supported primitives; output remains **conceptual, not for construction** ([drawing details](docs/DRAWING_OUTPUTS.md)) |
+| Specification-derived CAD plan sheets | Structured building JSON → standard-layered **DXF plans**, paper-space layouts/title blocks, optional vector PDFs, room/door/window schedules and a sheet register, with ISO 13567 / NCS profiles and office overrides ([PR #6](https://github.com/MakeItEzzz555/Gridline/pull/6)) |
+| Local drawing checks | `aec_cad.py check` validates **selected** drafting properties, title-block fields, tags, schedule values and sheet-register values. **It does not yet independently verify every drawn element, PDF or native AutoCAD result.** ([Codex audit PR #19](https://github.com/MakeItEzzz555/Gridline/pull/19)) |
+| Read-only revision-impact review | Compare two building specs to list changed openings, walls, rooms/levels, affected **indexed** sheets and impacted schedules. Coverage is partial: no complete wall → hosted opening → detail propagation or inspection of unrelated CAD/PDF drawings ([PR #9](https://github.com/MakeItEzzz555/Gridline/pull/9), [issue #10](https://github.com/MakeItEzzz555/Gridline/issues/10)) |
+| Local read-only MCP server | Optional **Gridline-owned** stdio MCP review server exposes revision comparison and capability discovery. It **does not connect to or edit** AutoCAD, Revit or other native applications ([PR #9](https://github.com/MakeItEzzz555/Gridline/pull/9)) |
+| Professional host integration | Revit, AutoCAD, Rhino/Grasshopper, IFC/Bonsai and related **workflow guidance** exists in skills. Native MCP tool connections, host acceptance testing and controlled model writes are **not yet shipped** ([issue #12](https://github.com/MakeItEzzz555/Gridline/issues/12)) |
+
+### Verified limitations and next engineering gates
+
+The independent [Gridline/Codex technical audit](docs/GRIDLINE_CODEX_AUDIT_AND_DISCUSSION_2026-10-22.md) reproduced and documented a critical limitation: **deleting one opening LINE from an otherwise unchanged generated DXF still produced a successful check**. The checker must not be described as fully geometric or construction-ready until corruption tests and independent geometry readback are implemented.
+
+Other gates remain open: [cross-sheet comparison and 40-sheet reference fixtures (#10)](https://github.com/MakeItEzzz555/Gridline/issues/10), [IFC schema/IDS validation (#11)](https://github.com/MakeItEzzz555/Gridline/issues/11), [real CAD/BIM adapters (#12)](https://github.com/MakeItEzzz555/Gridline/issues/12), [editable 2D→3D/BIM (#13)](https://github.com/MakeItEzzz555/Gridline/issues/13), [scanned/hand-marked plans (#14)](https://github.com/MakeItEzzz555/Gridline/issues/14), [human-approved revision state/transactions (#15)](https://github.com/MakeItEzzz555/Gridline/issues/15), and [native AutoCAD open/AUDIT/edit/plot/round-trip evidence (#16)](https://github.com/MakeItEzzz555/Gridline/issues/16).
+
+**These are implementation issues, not completed product claims.** The [community progress ledger](docs/COMMUNITY_PROGRESS_2026-10-23.md) records delivered pieces, proof, remaining acceptance criteria, and why issues stay open. Contributions, professional CAD sample sets and critical reviews are welcome.
 
 ## Install with your AI agent — copy once
 
@@ -153,7 +175,7 @@ There is also an opt-in local, read-only Gridline MCP server exposing this compa
 
 ## Coordinated CAD drawings
 
-When a trusted native CAD/BIM host is available, the skills prefer the native editable model. When it is not, the drawing skill builds a **coordinated drawing set from one building spec**: standard-layered DXF sheets (ISO 13567, US NCS or your office profile) that open in AutoCAD, vector PDFs, and room/door/window schedules and a sheet register. A checker then verifies the files against the standard and against each other before anything is presented.
+When a trusted native CAD/BIM host is available, the skills provide guidance for working with the native editable model; **Gridline does not currently provide an installed native-host connection**. Without one, the drawing skill can build a **specification-derived plan-sheet set**: standard-layered DXF files (ISO 13567, US NCS or an office profile), optional vector PDFs, room/door/window schedules and a sheet register. The current checker inspects a defined subset of properties and schedule consistency; it **does not** certify geometry completeness, PDF fidelity, cross-sheet views or AutoCAD editability. Native AutoCAD open/AUDIT/edit/plot/round-trip testing is an outstanding acceptance gate ([#16](https://github.com/MakeItEzzz555/Gridline/issues/16)).
 
 ```bash
 pip install ezdxf matplotlib
@@ -264,7 +286,7 @@ This is an open-source professional-assistance toolkit, not a substitute for app
 
 <div align="center">
 
-**Gridline — AI assistance for the whole AEC workflow, with evidence and review gates.**
+**Gridline — AEC agent skills, specification-derived drawings and auditable reviews. Native quality gates are still in development.**
 
 *Community project. Not affiliated with Autodesk, McNeel, Graphisoft, Nemetschek, buildingSMART, OpenAI, Anthropic or Google.*
 
