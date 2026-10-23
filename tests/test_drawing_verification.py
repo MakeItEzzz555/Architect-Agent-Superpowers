@@ -1,5 +1,8 @@
 """Corrupt output bytes while preserving source, labels and schedules."""
 import hashlib
+import csv
+import contextlib
+import io
 import json
 import math
 import os
@@ -56,6 +59,37 @@ class DrawingVerificationTests(unittest.TestCase):
 
     def report(self):
         return json.loads((self.out / "check-report.json").read_text())
+
+    def test_oversized_csv_field_retains_failure_receipt(self):
+        for name in ("room-schedule.csv", "sheet-register.csv"):
+            with self.subTest(schedule=name):
+                path = self.out / name
+                original = path.read_bytes()
+                path.write_text("id\n" + "x" * (csv.field_size_limit() + 1) + "\n")
+                checked = run("check", EXAMPLE, self.out)
+                self.assertEqual(checked.returncode, 1, checked.stdout + checked.stderr)
+                self.assertNotIn("Traceback", checked.stderr)
+                report = self.report()
+                self.assertEqual(report["status"], "FAIL")
+                self.assertIn("field larger than field limit", " ".join(report["errors"]))
+                self.assertEqual(report["output_hashes"][name], hashlib.sha256(path.read_bytes()).hexdigest())
+                self.assertTrue((self.out / "receipts" / f"{report['receipt_id']}.json").exists())
+                path.write_bytes(original)
+
+    def test_build_missing_required_pdf_returns_failure(self):
+        from unittest import mock
+        sys.path.insert(0, str(SCRIPT.parent))
+        self.addCleanup(sys.path.remove, str(SCRIPT.parent))
+        import aec_cad
+        for pdf_results in ((False, False), (True, False)):
+            with self.subTest(pdf_results=pdf_results), \
+                    mock.patch.object(aec_cad, "write_pdf", side_effect=pdf_results), \
+                    contextlib.redirect_stdout(io.StringIO()) as stdout, \
+                    contextlib.redirect_stderr(io.StringIO()) as stderr:
+                result = aec_cad.build(EXAMPLE, self.root / "incomplete", None)
+                self.assertEqual(result, 1, stdout.getvalue() + stderr.getvalue())
+                self.assertIn("required PDF", stderr.getvalue())
+                self.assertNotIn("BUILT", stdout.getvalue())
 
     def test_missing_moved_resized_duplicated_geometry_fails_with_unchanged_labels(self):
         for layer_key, entity_type in (("opening", "LINE"), ("wall_external", "LWPOLYLINE"),

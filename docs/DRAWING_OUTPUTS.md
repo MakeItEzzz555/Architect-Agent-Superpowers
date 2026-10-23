@@ -18,6 +18,8 @@ One building spec (levels, grids, walls, openings, rooms, sheets, title data, in
 - a vector PDF per sheet;
 - room, door and window schedules and a sheet register (CSV).
 
+Every sheet PDF is required: `build` exits nonzero if any cannot be generated, including when matplotlib is unavailable. Partial files can remain after a failed build; do not publish them. `check` also rejects missing PDFs and retains a failure receipt for CSV parser errors, including oversized fields.
+
 Layers, lineweights, text sizes, paper sizes and statuses come from a standards profile: `iso13567` (default), `ncs`, or an office profile that `extends` one of them.
 
 ```bash

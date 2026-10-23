@@ -551,9 +551,11 @@ def build(spec_path: Path, out: Path, standard: str | None) -> int:
     write_csv(out / "sheet-register.csv", ["number", "title", "scale", "size", "revision", "status", "date"],
               [[s["number"], s["title"], f"1:{s['scale']}", s["size"], project["revision"], project["status"], project["date"]]
                for s in spec["sheets"]])
-    print(f"BUILT {len(spec['sheets'])} sheets ({pdfs} PDF) and 4 schedules in {out}")
     if pdfs < len(spec["sheets"]):
-        print("NOTE: PDFs need matplotlib (pip install matplotlib)")
+        print(f"ERROR: build incomplete: produced {pdfs}/{len(spec['sheets'])} required PDFs; "
+              "check will fail. Install matplotlib (pip install matplotlib).", file=sys.stderr)
+        return 1
+    print(f"BUILT {len(spec['sheets'])} sheets ({pdfs} PDF) and 4 schedules in {out}")
     return 0
 
 
@@ -590,7 +592,8 @@ def check(spec_path: Path, out: Path, standard: str | None) -> int:
                 for gate in ("dxf_standards", "dxf_geometry", "pdf_vectors"):
                     gates[gate]["sheets"][sheet["number"]] = {"status": "NOT_RUN"}
             check_outputs(spec, profile, outputs, gates, errors, warnings, checked)
-    except (OSError, ValueError, TypeError, KeyError, ArithmeticError, RecursionError, ezdxf.DXFError) as exc:
+    except (OSError, ValueError, TypeError, KeyError, ArithmeticError, RecursionError, csv.Error,
+            ezdxf.DXFError) as exc:
         errors.append(f"validation could not complete: {type(exc).__name__}: {exc}")
         if gates["spec"]["status"] == "NOT_RUN":
             gates["spec"]["status"] = "FAIL"
@@ -797,7 +800,7 @@ def main():
     parser.add_argument("--standard", help="iso13567, ncs, or a path to an office profile JSON")
     args = parser.parse_args()
     if ezdxf is None:
-        print("aec_cad.py needs ezdxf: pip install ezdxf matplotlib", file=sys.stderr)
+        print("aec_cad.py needs ezdxf: pip install ezdxf matplotlib pypdf", file=sys.stderr)
         sys.exit(2)
     sys.exit((build if args.command == "build" else check)(args.spec, args.out, args.standard))
 
