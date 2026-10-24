@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — recorded skill activation evaluation (2026-10-24)
+
+- Add an offline scorer for real Codex, Claude Code and Gemini CLI activation observations, with per-skill recall, negative-control rates, SHA-256 provenance, baseline comparison and optional per-case regression gates.
+- Add 19 deterministic tests; CI discovers them automatically. This validates scoring logic, not live model activation accuracy.
+
 ## Unreleased — trustworthy local drawing verification
 
 - Preserve failure receipts on CSV parser errors and fail incomplete builds when any required PDF is not generated.

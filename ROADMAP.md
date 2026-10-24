@@ -21,6 +21,8 @@ See [next AEC phases and official integration research](docs/NEXT_AEC_PHASES.md)
 Other P1 agent routing/reviewer evaluations and standards-profile improvements remain planned; they are not replaced by visual demos.
 
 ## Next, in order
+
+**Evaluation infrastructure completed (unreleased):** offline scoring of recorded provider activations, provenance and baseline regression gates. Real provider-native observation capture and repeated-run behavioral benchmarks remain open.
 1. **Agent reliability (P1).** Read-only reviewer agents; baseline activation and negative-trigger evals on the existing cases; more negative cases.
 2. **Audit existing drawings.** Run the standards checks (layers, ByLayer properties, text heights, title blocks, sheet register) on a practice's *own* DXF files, not only generated ones. Most offices already have drawings; checking them is immediate value.
 3. **Sections and elevations from the same spec.** Levels, wall heights, sills and opening heights are already in the spec; derive elevations and a simple section, plus door/window type legends and a finishes schedule.
