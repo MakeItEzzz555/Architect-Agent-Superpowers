@@ -109,6 +109,10 @@ bash scripts/install-global.sh auto
 
 Windows users can run `powershell -ExecutionPolicy Bypass -File .\scripts\install-global.ps1 auto`.
 
+## Measured skill activation
+
+Record actual Codex, Claude Code or Gemini CLI activations and use the dependency-free [behavioral evaluation scorer](docs/EVALS.md) to measure per-skill recall, negative controls and regressions against a baseline. CI tests the scorer without making model calls or claiming measured routing accuracy.
+
 ## The 30 superpowers
 
 ### Brief, research and site
