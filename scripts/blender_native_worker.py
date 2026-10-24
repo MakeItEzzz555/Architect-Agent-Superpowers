@@ -119,6 +119,8 @@ def verify(scene,out):
         want=sorted(e["dimensions_m"])
         if max(abs(a-b) for a,b in zip(dims,want))>0.001:
             raise ValueError(f"GLB dimensions lost for {name}: {dims}/{want}")
+        if (Vector(obj.location)-Vector(e["center_m"])).length>0.001:
+            raise ValueError(f"GLB location drift for {name}")
     result={"status":"PASS","native_mesh_count":len(mesh_objs),
             "glb_mesh_count":len(glb_mesh),"scope":"SUPPORTED_BOX_GEOMETRY_ONLY",
             "native_inspected":evidence,"known_limitations":scene["unverified"]}
