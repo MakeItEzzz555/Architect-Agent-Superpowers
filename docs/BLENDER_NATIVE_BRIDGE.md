@@ -13,7 +13,9 @@ python3 scripts/blender_native.py build \
   /path/to/NEW-output-directory
 ```
 
-The destination **must not exist**. Only an explicitly provided NEW output directory is used; Blender is started in background factory mode. No Blender preferences or existing model are changed. The script does not install a plugin or modify Codex's global MCP configuration. Optional `--blender /path/to/Blender` selects a trusted executable (verify its publisher and version first). A failed build returns nonzero and does not advertise a successful model.
+The destination **must not exist**. For installed portable Gridline skills, run `python3 scripts/blender_native.py doctor` and `build` **from the installed architectural-drawing-generation skill directory**; it includes the worker and building-spec validator. The repository-level launcher above is only a convenience.
+
+Only an explicitly provided NEW output directory is used; Blender is started in background factory mode. No Blender preferences or existing model are changed. The script does not install a plugin or modify Codex's global MCP configuration. Optional `--blender /path/to/Blender` selects a trusted executable (verify its publisher and version first). A failed build returns nonzero and does not advertise a successful model.
 
 Result:
 - `model.blend`: Blender source scene with named mesh objects and retained `gridline_id`, levels and opening-host metadata.

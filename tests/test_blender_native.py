@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
-MODULE=ROOT/"scripts"/"blender_native.py"
+MODULE=ROOT/"skills"/"architectural-drawing-generation"/"scripts"/"blender_native.py"
 spec=importlib.util.spec_from_file_location("blender_native",MODULE)
 bridge=importlib.util.module_from_spec(spec)
 spec.loader.exec_module(bridge)
