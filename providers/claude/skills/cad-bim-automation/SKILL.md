@@ -12,3 +12,5 @@ Choose the least destructive method: read/report → export to new file → supp
 Batch protocol: inventory → dry run → sample → validate → full run → post-change audit.
 
 Verify counts, units, geometry bounds, naming, missing objects/categories, export integrity, and deltas. Never alter surveyed coordinates, structural geometry, life-safety elements, or issued information outside explicit scope and review.
+
+**Opt-in local Blender prototype:** when an actual Blender executable is available and the user requests a NEW conceptual 3D scene from the supported Gridline building-spec, consult repository `docs/BLENDER_NATIVE_BRIDGE.md` and use the self-contained `architectural-drawing-generation/scripts/blender_native.py` bridge, first `doctor`, then an explicitly scoped `build` to a fresh output directory. This creates simple editable Blender mesh geometry and .glb with native reopen/readback; it does not edit live documents, install a Blender MCP, generate hidden architectural details from images, or establish IFC/AutoCAD compliance. Report unsupported model elements and require image/measurement clarification for detailed reference matching.
